@@ -15,6 +15,7 @@ examples/data
 agents
 
 .DS_Store
+.vscode
 
 
 
