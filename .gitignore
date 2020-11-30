@@ -15,7 +15,8 @@ examples/data
 agents
 
 .DS_Store
-
+.vscode
+.idea
 
 
 # Diagnostic reports (https://nodejs.org/api/report.html)
