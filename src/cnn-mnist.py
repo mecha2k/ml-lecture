@@ -1,12 +1,16 @@
 import numpy as np
-from keras.models import Sequential
-from keras.layers import Activation, Dense, Dropout
-from keras.layers import Conv2D, MaxPooling2D, Flatten
-from keras.utils import to_categorical, plot_model
-from keras.datasets import mnist
+
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Activation, Dense, Dropout
+from tensorflow.keras.layers import Conv2D, MaxPooling2D, Flatten
+from tensorflow.keras.utils import to_categorical, plot_model
+from tensorflow.keras.datasets import mnist
 import matplotlib.pyplot as plt
 import time
 import os
+import plaidml.keras
+
+plaidml.keras.install_backend()
 
 # os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 
@@ -54,7 +58,7 @@ images = x_test[indexes]
 labels = y_test[indexes]
 
 # plot the 25 mnist digits
-plt.figure(figsize=(15, 15))
+plt.figure(figsize=(12, 12))
 plt.rc("font", size=14)
 for i in range(len(indexes)):
     plt.subplot(5, 5, i + 1)
