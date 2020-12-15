@@ -8,9 +8,9 @@ from tensorflow.keras.datasets import mnist
 import matplotlib.pyplot as plt
 import time
 import os
-import plaidml.keras
+# import plaidml.keras
 
-plaidml.keras.install_backend()
+# plaidml.keras.install_backend()
 
 # os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 
