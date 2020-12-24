@@ -3,16 +3,10 @@ import numpy as np
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Activation, Dense, Dropout
 from tensorflow.keras.layers import Conv2D, MaxPooling2D, Flatten
-from tensorflow.keras.utils import to_categorical, plot_model
+from tensorflow.keras.utils import to_categorical
 from tensorflow.keras.datasets import mnist
 import matplotlib.pyplot as plt
 import time
-import os
-# import plaidml.keras
-
-# plaidml.keras.install_backend()
-
-# os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 
 (x_train, y_train), (x_test, y_test) = mnist.load_data()
 
@@ -32,7 +26,9 @@ x_train = x_train.astype("float32") / 255
 x_test = x_test.astype("float32") / 255
 
 model = Sequential()
-model.add(Conv2D(filters=64, kernel_size=3, activation="relu", input_shape=(image_size, image_size, 1)))
+model.add(
+    Conv2D(filters=64, kernel_size=3, activation="relu", input_shape=(image_size, image_size, 1))
+)
 model.add(MaxPooling2D(2))
 model.add(Conv2D(filters=64, kernel_size=3, activation="relu"))
 model.add(MaxPooling2D(2))
@@ -48,7 +44,7 @@ model.fit(x_train, y_train, epochs=1, batch_size=128)
 
 loss, acc = model.evaluate(x_test, y_test, batch_size=128)
 print("\nTest accuracy: %.1f%%" % (100.0 * acc))
-print(f"Elapsed time: {time.time()-start_time} sec.")
+print(f"Elapsed time: {time.time()-start_time} sec")
 
 predictions = model.predict(x_test)
 
@@ -58,8 +54,8 @@ images = x_test[indexes]
 labels = y_test[indexes]
 
 # plot the 25 mnist digits
-plt.figure(figsize=(12, 12))
-plt.rc("font", size=14)
+plt.figure(figsize=(10, 10))
+plt.rc("font", size=10)
 for i in range(len(indexes)):
     plt.subplot(5, 5, i + 1)
     image = images[i]
