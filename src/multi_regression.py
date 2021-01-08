@@ -1,5 +1,6 @@
-import tensorflow.compat.v1 as tf
+import tensorflow
 
+tf = tensorflow.compat.v1
 tf.disable_v2_behavior()
 
 # fmt: off
