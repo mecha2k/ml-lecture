@@ -1,4 +1,5 @@
 import numpy as np
+import os
 
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Activation, Dense, Dropout
@@ -7,6 +8,8 @@ from tensorflow.keras.utils import to_categorical
 from tensorflow.keras.datasets import mnist
 import matplotlib.pyplot as plt
 import time
+
+# os.environ["KERAS_BACKEND"] = "plaidml.keras.backend"
 
 (x_train, y_train), (x_test, y_test) = mnist.load_data()
 
@@ -66,3 +69,4 @@ for i in range(len(indexes)):
 plt.savefig("cnn-mnist.png")
 plt.show()
 plt.close("all")
+
