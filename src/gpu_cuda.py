@@ -23,3 +23,8 @@ if gpus:
         tf.config.experimental.set_visible_devices(gpus[0], "GPU")
     except RuntimeError as e:
         print(e)
+
+
+import torch
+
+print(torch.__version__)
