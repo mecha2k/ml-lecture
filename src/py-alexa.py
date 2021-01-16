@@ -1,3 +1,4 @@
+from numpy.compat.py3k import contextlib_nullcontext
 import speech_recognition as sr
 import pyttsx3
 import pywhatkit
@@ -17,6 +18,7 @@ def talk(text):
 
 
 def take_command():
+    command = None
     try:
         with sr.Microphone() as source:
             print("listening...")
