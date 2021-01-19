@@ -66,7 +66,6 @@ for i in range(len(indexes)):
     plt.title(f"Label:{np.argmax(labels[i])}, Predict:{np.argmax(predictions[indexes[i]])}")
     plt.axis("off")
 
-plt.savefig("cnn-mnist.png")
+plt.savefig(".src/cnn-mnist.png")
 plt.show()
 plt.close("all")
-
