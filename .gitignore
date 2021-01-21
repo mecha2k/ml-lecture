@@ -17,7 +17,7 @@ agents
 .DS_Store
 .vscode
 .idea
-
+data
 
 
 # Diagnostic reports (https://nodejs.org/api/report.html)
