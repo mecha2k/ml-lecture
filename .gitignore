@@ -18,6 +18,7 @@ agents
 .vscode
 .idea
 data
+src/data
 
 
 # Diagnostic reports (https://nodejs.org/api/report.html)
