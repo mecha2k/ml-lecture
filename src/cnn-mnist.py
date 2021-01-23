@@ -59,7 +59,7 @@ labels = y_test[indexes]
 
 # plot the 25 mnist digits
 plt.figure(figsize=(12, 12))
-plt.rc("font", size=14)
+plt.rc("font", size=12)
 for i in range(len(indexes)):
     plt.subplot(5, 5, i + 1)
     image = images[i]
@@ -67,6 +67,6 @@ for i in range(len(indexes)):
     plt.title(f"Label:{np.argmax(labels[i])}, Predict:{np.argmax(predictions[indexes[i]])}")
     plt.axis("off")
 
-plt.savefig("cnn-mnist.png")
+plt.savefig("images/cnn-mnist.png")
 plt.show()
 plt.close("all")
