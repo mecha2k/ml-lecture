@@ -5,7 +5,7 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "python",
+      "name": "pydebug",
       "type": "python",
       "request": "launch",
       "program": "${file}",
