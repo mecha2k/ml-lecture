@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+import torch.optim as optim
 
 from icecream import ic
 
@@ -90,8 +91,6 @@ learning_rate = 0.01
 for f in net.parameters():
     f.data.sub_(f.grad.data * learning_rate)
 
-import torch.optim as optim
-
 # Optimizer를 생성합니다.
 optimizer = optim.SGD(net.parameters(), lr=0.01)
 
@@ -101,3 +100,7 @@ output = net(input)
 loss = criterion(output, target)
 loss.backward()
 optimizer.step()  # 업데이트 진행
+
+t1 = torch.tensor([[1,2],[3,4]])
+t2 = torch.gather(t1, 1, torch.tensor([[0,0],[1,0]]))
+print(t2)
