@@ -1,3 +1,5 @@
+import numpy as np
+
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -103,3 +105,27 @@ optimizer.step()  # 업데이트 진행
 t1 = torch.tensor([[1, 2], [3, 4]])
 t2 = torch.gather(t1, 1, torch.tensor([[0, 0], [1, 0]]))
 print(t2)
+
+source = torch.tensor([[1, 2, 3], [4, 5, 6], [7, 8, 9], [10, 11, 12]])
+index = torch.tensor([[0, 0], [1, 2], [2, 2], [0, 1]])
+print(index.size())
+print(source.gather(dim=1, index=index))
+print(source.size())
+
+a = torch.tensor(np.random.rand(1, 5, 4))
+print(a)
+print(a.size())
+a = torch.squeeze(a)
+print(a.size())
+a = torch.unsqueeze(a, 0)
+print(a.size())
+a = torch.unsqueeze(a, 0)
+print(a.size())
+a = torch.unsqueeze(a, 3)
+print(a.size())
+a = torch.unsqueeze(a, -1)
+print(a.size())
+a = torch.squeeze(a, 2)
+print(a.size())
+a = torch.squeeze(a, -1)
+print(a.size())
