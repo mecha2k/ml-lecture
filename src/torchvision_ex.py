@@ -10,7 +10,6 @@ import numpy as np
 
 from icecream import ic
 
-
 transform = transforms.Compose(
     [transforms.ToTensor(), transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))]
 )
@@ -28,13 +27,13 @@ testloader = torch.utils.data.DataLoader(testset, batch_size=4, shuffle=False, n
 classes = ("plane", "car", "bird", "cat", "deer", "dog", "frog", "horse", "ship", "truck")
 
 
-
 # 이미지를 보여주기 위한 함수
 def imshow(img):
     img = img / 2 + 0.5  # unnormalize
     npimg = img.numpy()
     plt.imshow(np.transpose(npimg, (1, 2, 0)))
     plt.show()
+
 
 # 학습용 이미지를 무작위로 가져오기
 dataiter = iter(trainloader)
@@ -90,7 +89,6 @@ for epoch in range(2):  # 데이터셋을 수차례 반복합니다.
             running_loss = 0.0
 
 print("Finished Training")
-
 
 PATH = "./data/cifar_net"
 torch.save(net.state_dict(), PATH)
