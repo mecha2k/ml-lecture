@@ -1,22 +1,24 @@
+import numpy as np
+
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+import torch.optim as optim
 
-from icecream import ic
 
 x = torch.ones(2, 2, requires_grad=True)
-ic(x)
+print(x)
 
 y = x + 2
-ic(y)
-ic(y.grad_fn)
+print(y)
+print(y.grad_fn)
 
 z = y * y * 3
 out = z.mean()
-ic(z, out)
+print(z, out)
 
 out.backward()
-ic(x.grad)
+print(x.grad)
 
 
 class Net(nn.Module):
@@ -51,15 +53,15 @@ class Net(nn.Module):
 
 
 net = Net()
-ic(net)
+print(net)
 
 params = list(net.parameters())
-ic(len(params))
-ic(params[0].size())  # conv1의 .weight
+print(len(params))
+print(params[0].size())  # conv1의 .weight
 
 input = torch.randn(1, 1, 32, 32)
 out = net(input)
-ic(out)
+print(out)
 
 net.zero_grad()
 out.backward(torch.randn(1, 10))
@@ -70,35 +72,60 @@ target = target.view(1, -1)  # 출력과 같은 shape로 만듦
 criterion = nn.MSELoss()
 
 loss = criterion(output, target)
-ic(loss)
+print(loss)
 
-ic(loss.grad_fn)  # MSELoss
-ic(loss.grad_fn.next_functions[0][0])  # Linear
-ic(loss.grad_fn.next_functions[0][0].next_functions[0][0])  # ReLU
+print(loss.grad_fn)  # MSELoss
+print(loss.grad_fn.next_functions[0][0])  # Linear
+print(loss.grad_fn.next_functions[0][0].next_functions[0][0])  # ReLU
 
-net.zero_grad()     # 모든 매개변수의 변화도 버퍼를 0으로 만듦
+net.zero_grad()  # 모든 매개변수의 변화도 버퍼를 0으로 만듦
 
-ic('conv1.bias.grad before backward')
-ic(net.conv1.bias.grad)
+print("conv1.bias.grad before backward")
+print(net.conv1.bias.grad)
 
 loss.backward()
 
-ic('conv1.bias.grad after backward')
-ic(net.conv1.bias.grad)
+print("conv1.bias.grad after backward")
+print(net.conv1.bias.grad)
 
 learning_rate = 0.01
 for f in net.parameters():
     f.data.sub_(f.grad.data * learning_rate)
 
-import torch.optim as optim
-
 # Optimizer를 생성합니다.
 optimizer = optim.SGD(net.parameters(), lr=0.01)
 
 # 학습 과정(training loop)에서는 다음과 같습니다:
-optimizer.zero_grad()   # 변화도 버퍼를 0으로
+optimizer.zero_grad()  # 변화도 버퍼를 0으로
 output = net(input)
 loss = criterion(output, target)
 loss.backward()
-optimizer.step()    # 업데이트 진행
+optimizer.step()  # 업데이트 진행
 
+t1 = torch.tensor([[1, 2], [3, 4]])
+t2 = torch.gather(t1, 1, torch.tensor([[0, 0], [1, 0]]))
+print(t2)
+
+source = torch.tensor([[1, 2, 3], [4, 5, 6], [7, 8, 9], [10, 11, 12]])
+index = torch.tensor([[0, 0], [1, 2], [2, 2], [0, 1]])
+print(index.size())
+print(source.gather(dim=1, index=index))
+print(source.size())
+
+a = torch.tensor(np.random.rand(1, 5, 4))
+print(a)
+print(a.size())
+a = torch.squeeze(a)
+print(a.size())
+a = torch.unsqueeze(a, 0)
+print(a.size())
+a = torch.unsqueeze(a, 0)
+print(a.size())
+a = torch.unsqueeze(a, 3)
+print(a.size())
+a = torch.unsqueeze(a, -1)
+print(a.size())
+a = torch.squeeze(a, 2)
+print(a.size())
+a = torch.squeeze(a, -1)
+print(a.size())
