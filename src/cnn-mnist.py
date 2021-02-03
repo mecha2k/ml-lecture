@@ -9,7 +9,6 @@ from tensorflow.keras.datasets import mnist
 import matplotlib.pyplot as plt
 import time
 
-# os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 # os.environ["KERAS_BACKEND"] = "plaidml.keras.backend"
 
 (x_train, y_train), (x_test, y_test) = mnist.load_data()
@@ -67,6 +66,6 @@ for i in range(len(indexes)):
     plt.title(f"Label:{np.argmax(labels[i])}, Predict:{np.argmax(predictions[indexes[i]])}")
     plt.axis("off")
 
-plt.savefig("src/cnn-mnist.png")
+plt.savefig(".src/cnn-mnist.png")
 plt.show()
 plt.close("all")
