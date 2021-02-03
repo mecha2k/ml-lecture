@@ -3,6 +3,7 @@ print(a)
 
 from functools import reduce
 
+# apply a particular function passed in its argument to all of the list elements
 b = reduce(lambda x, y: x + y, range(5))
 print(b)
 
@@ -29,3 +30,42 @@ print(a)
 
 a = np.random.choice(5, 3, p=[0.5, 0.2, 0.1, 0.1, 0.1])
 print(a)
+
+
+from types import SimpleNamespace
+
+pong_dict = {
+    "env_name": "PongNoFrameskip-v4",
+    "stop_reward": 18.0,
+    "run_name": "pong",
+    "replay_size": 100000,
+    "replay_initial": 10000,
+    "target_net_sync": 1000,
+    "epsilon_frames": 10 ** 5,
+    "epsilon_start": 1.0,
+    "epsilon_final": 0.02,
+    "learning_rate": 0.0001,
+    "gamma": 0.99,
+    "batch_size": 32,
+}
+print(*pong_dict)
+
+nameSpace = SimpleNamespace(**pong_dict)
+print(nameSpace)
+
+pong_dict["gamma"] = 0.9
+print(nameSpace)
+
+# *tuple means
+# "treat the elements of this iterable as positional arguments to this function call"
+# **dict means
+# "treat the key-value in the dictionary as additional named arguments to this function call"
+def func_a(x, y):
+    print(x, y)
+
+
+dict_sample = {"x": 1, "y": 2}
+tuple_sample = (3, 2)
+
+func_a(**dict_sample)
+func_a(*tuple_sample)
