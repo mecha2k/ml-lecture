@@ -1,11 +1,16 @@
-import gym
-import time
 import argparse
+import collections
+import os
+import time
+
+import gym
 import numpy as np
 import torch
-import collections
 
-from src.dqn_pong.libc import dqn_model, wrappers
+print(os.getcwd())
+print(__name__)
+
+from .src.dqn_pong.libc import dqn_model, wrappers
 
 
 def main():
@@ -14,16 +19,10 @@ def main():
 
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "-m",
-        "--model",
-        default="./results/PongNoFrameskip-v4-best.dat",
-        help="Model file to load",
+        "-m", "--model", default="./results/PongNoFrameskip-v4-best.dat", help="Model file to load",
     )
     parser.add_argument(
-        "-e",
-        "--env",
-        default=env_name,
-        help="Environment name to use, default=" + env_name,
+        "-e", "--env", default=env_name, help="Environment name to use, default=" + env_name,
     )
     parser.add_argument("-r", "--record", default="./video", help="Directory for video")
     parser.add_argument(
