@@ -9,7 +9,7 @@ from tensorflow.keras.datasets import mnist
 import matplotlib.pyplot as plt
 import time
 
-# os.environ["KERAS_BACKEND"] = "plaidml.keras.backend"
+# os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 
 (x_train, y_train), (x_test, y_test) = mnist.load_data()
 
