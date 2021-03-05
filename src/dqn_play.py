@@ -68,8 +68,4 @@ def main():
 
 
 if __name__ == "__main__":
-    # sys.path.append(path.dirname(path.abspath(__file__)))
-    # print(path.dirname(path.abspath(__file__)))
-    # print(sys.path)
-
     main()
