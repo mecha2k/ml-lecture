@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 import time
 
 
-os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
+# os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 
 
 def cnn_mnist():
