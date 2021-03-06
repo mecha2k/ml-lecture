@@ -18,7 +18,7 @@ def main():
     parser.add_argument(
         "-m",
         "--model",
-        default="PongNoFrameskip-v4-best.dat",
+        default="./libc/PongNoFrameskip-v4-best.dat",
         help="Model file to load",
     )
     parser.add_argument(
@@ -27,7 +27,7 @@ def main():
         default=env_name,
         help="Environment name to use, default=" + env_name,
     )
-    parser.add_argument("-r", "--record", default="./video", help="Directory for video")
+    parser.add_argument("-r", "--record", help="Directory for video")
     parser.add_argument(
         "--no-vis", default=True, dest="vis", help="Disable visualization", action="store_false"
     )
