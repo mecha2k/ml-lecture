@@ -6,7 +6,6 @@ import gym
 import numpy as np
 import torch
 
-from os import path
 from libc import dqn_model, wrappers
 
 
