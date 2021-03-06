@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 import time
 
 
-# os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
+os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 
 
 def cnn_mnist():
@@ -72,7 +72,6 @@ def cnn_mnist():
         plt.title(f"Label:{np.argmax(labels[i])}, Predict:{np.argmax(predictions[indexes[i]])}")
         plt.axis("off")
 
-    plt.savefig("cnn-mnist.png")
     plt.show()
     plt.close("all")
 
