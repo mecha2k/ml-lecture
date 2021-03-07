@@ -48,12 +48,14 @@ pong_dict = {
     "gamma": 0.99,
     "batch_size": 32,
 }
+print("*pong_dict")
 print(*pong_dict)
 
 nameSpace = SimpleNamespace(**pong_dict)
+print("nameSpace")
 print(nameSpace)
 
-pong_dict["gamma"] = 0.9
+pong_dict["batch_size"] = 64
 print(nameSpace)
 
 # *tuple means
@@ -69,3 +71,9 @@ tuple_sample = (3, 2)
 
 func_a(**dict_sample)
 func_a(*tuple_sample)
+
+
+aa = np.random.randint(10, size=6)
+aa = aa.reshape(1, 2, 3)
+print(aa)
+print(*aa)

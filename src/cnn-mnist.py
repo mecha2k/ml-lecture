@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 import time
 
 
-# os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
+os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 
 
 def cnn_mnist():
@@ -25,6 +25,9 @@ def cnn_mnist():
 
     y_train = to_categorical(y_train)
     y_test = to_categorical(y_test)
+
+    x_train = x_train[:30000]
+    y_train = y_train[:30000]
 
     image_size = x_train.shape[1]
     x_train = np.reshape(x_train, [-1, image_size, image_size, 1])
@@ -67,7 +70,7 @@ def cnn_mnist():
     plt.rc("font", size=10)
     for i in range(len(indexes)):
         plt.subplot(5, 5, i + 1)
-        image = images[i]
+        image = images[i].reshape(image_size, image_size)
         plt.imshow(image, cmap="gray")
         plt.title(f"Label:{np.argmax(labels[i])}, Predict:{np.argmax(predictions[indexes[i]])}")
         plt.axis("off")
