@@ -26,8 +26,8 @@ def cnn_mnist():
     y_train = to_categorical(y_train)
     y_test = to_categorical(y_test)
 
-    x_train = x_train[:30000]
-    y_train = y_train[:30000]
+    # x_train = x_train[:30000]
+    # y_train = y_train[:30000]
 
     image_size = x_train.shape[1]
     x_train = np.reshape(x_train, [-1, image_size, image_size, 1])

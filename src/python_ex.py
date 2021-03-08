@@ -77,3 +77,21 @@ aa = np.random.randint(10, size=6)
 aa = aa.reshape(1, 2, 3)
 print(aa)
 print(*aa)
+
+
+import pandas as pd
+
+for arg in pong_dict:
+    print(arg, pong_dict[arg])
+
+df = pd.DataFrame.from_dict(pong_dict, orient="index")
+print(df)
+print(df[0].tolist())
+
+
+df = df.to_dict()
+print(df)
+print(df.keys())
+print(df.values())
+for arg in df:
+    print(arg, df[arg])
