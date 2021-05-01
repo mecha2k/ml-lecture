@@ -41,7 +41,7 @@ def make_sample():
         dd = random.choice(days28)
     birth = f"{yy:4d}-{mm:02d}-{dd:02d}"
 
-    return (name, address, birth, phone, email)
+    return name, address, birth, phone, email
 
 
 if __name__ == "__main__":
