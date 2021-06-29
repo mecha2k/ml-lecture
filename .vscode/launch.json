@@ -4,7 +4,6 @@
   // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
   "version": "0.2.0",
   "configurations": [
-    
     {
       "name": "golang",
       "type": "go",
@@ -12,14 +11,13 @@
       "mode": "debug",
       "program": "${file}"
     },
-
     {
       "name": "pydebug",
       "type": "python",
       "request": "launch",
       "program": "${file}",
       "cwd": "${workspaceFolder}/src",
-      "console": "integratedTerminal"
+      "console": "internalConsole"
     }
   ]
 }
