@@ -41,7 +41,7 @@ def clusterData(data, n_clusters=10):
     plt.xlabel("$k$", fontsize=14)
     plt.ylabel("Silhouette score", fontsize=14)
     plt.tight_layout()
-    plt.savefig("images/silhouette.png", format="png", dpi=300)    
+    plt.savefig("images/silhouette.png", format="png", dpi=300)
     plt.show()
 
 
@@ -52,7 +52,7 @@ def plot3D(X, y, n_clusters=7):
         xs = X[y == k]
         ax.scatter(xs[:, 0], xs[:, 1], xs[:, 2], marker="o", s=2)
     plt.tight_layout()
-    plt.savefig("images/scatter3d.png", format="png", dpi=300)    
+    plt.savefig("images/scatter3d.png", format="png", dpi=300)
     plt.show()
 
 
@@ -68,7 +68,7 @@ if __name__ == "__main__":
     print(np.cumsum(pca.explained_variance_ratio_))
 
     # clusterData(X_reduced, n_clusters=12)
-    
+
     k = 2
     kmeans = KMeans(n_clusters=k, random_state=42).fit(X_reduced)
     y_pred = kmeans.predict(X_reduced)
