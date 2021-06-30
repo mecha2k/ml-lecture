@@ -1,3 +1,4 @@
+from enum import auto
 import numpy as np
 import tensorflow as tf
 import os
@@ -11,7 +12,7 @@ import matplotlib.pyplot as plt
 import time
 
 
-os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
+# os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 
 
 def cnn_mnist():
@@ -52,7 +53,7 @@ def cnn_mnist():
     model.summary()
 
     model.compile(loss="categorical_crossentropy", optimizer="adam", metrics=["accuracy"])
-    model.fit(x_train, y_train, epochs=1, batch_size=128)
+    model.fit(x_train, y_train, epochs=1, batch_size=128, verbose=False)
 
     loss, acc = model.evaluate(x_test, y_test, batch_size=128)
     print("\nTest accuracy: %.1f%%" % (100.0 * acc))

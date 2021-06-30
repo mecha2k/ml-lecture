@@ -5,7 +5,8 @@ import seaborn as sns
 import os
 
 from sklearn.cluster import KMeans
-from sklearn.mixture import GaussianMixture
+
+# from sklearn.mixture import GaussianMixture
 from sklearn.metrics import silhouette_score
 from sklearn.preprocessing import StandardScaler
 from sklearn.decomposition import PCA
@@ -17,19 +18,19 @@ def readData():
     print(data.info())
     print(data.describe())
 
-    # print(data.describe())
-    # print(data.head())
-    # sns.pairplot(data, diag_kind="kde", palette="bright")
-    # pd.plotting.scatter_matrix(data, figsize=(8, 8))
-    # plt.show()
+    print(data.describe())
+    print(data.head())
+    sns.pairplot(data, diag_kind="kde", palette="bright")
+    pd.plotting.scatter_matrix(data, figsize=(8, 8))
+    plt.show()
 
     return data
 
 
 def clusterData(data, n_clusters=10):
-    kmeans_per_k = [KMeans(n_clusters=k, random_state=42).fit(data) for k in range(1, n_clusters)]
-    inertias = [model.inertia_ for model in kmeans_per_k]
+    kmeans_per_k = [KMeans(n_clusters=_k, random_state=42).fit(data) for _k in range(1, n_clusters)]
 
+    # inertias = [model.inertia_ for model in kmeans_per_k]
     # plt.figure(figsize=(8, 3.5))
     # plt.plot(range(1, n_clusters), inertias, "bo-")
     # plt.xlabel("$k$", fontsize=14)
@@ -41,18 +42,18 @@ def clusterData(data, n_clusters=10):
     plt.xlabel("$k$", fontsize=14)
     plt.ylabel("Silhouette score", fontsize=14)
     plt.tight_layout()
-    plt.savefig("images/silhouette.png", format="png", dpi=300)    
+    plt.savefig("images/silhouette.png", format="png", dpi=300)
     plt.show()
 
 
-def plot3D(X, y, n_clusters=7):
+def plot3D(_x, y, n_clusters=7):
     plt.figure(figsize=(10, 8))
     ax = plt.axes(projection="3d")
-    for k in range(n_clusters):
-        xs = X[y == k]
+    for _k in range(n_clusters):
+        xs = _x[y == _k]
         ax.scatter(xs[:, 0], xs[:, 1], xs[:, 2], marker="o", s=2)
     plt.tight_layout()
-    plt.savefig("images/scatter3d.png", format="png", dpi=300)    
+    plt.savefig("images/scatter3d.png", format="png", dpi=300)
     plt.show()
 
 
@@ -67,8 +68,8 @@ if __name__ == "__main__":
     X_recoverd = pca.inverse_transform(X_reduced)
     print(np.cumsum(pca.explained_variance_ratio_))
 
-    # clusterData(X_reduced, n_clusters=12)
-    
+    clusterData(X_reduced, n_clusters=12)
+
     k = 2
     kmeans = KMeans(n_clusters=k, random_state=42).fit(X_reduced)
     y_pred = kmeans.predict(X_reduced)
