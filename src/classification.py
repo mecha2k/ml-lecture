@@ -17,19 +17,30 @@ from matplotlib import cm
 
 def readData():
     csv_path = os.path.join(os.getcwd(), "data/input_train.csv")
-    data = pd.read_csv(csv_path, header=None)
-    # data = data[:1000]
-    # print(data.info())
-    # print(data.describe())
+    train = pd.read_csv(csv_path, header=None)
+    print(train.info())
+    print(train.describe())
+
+    csv_path = os.path.join(os.getcwd(), "data/input_test.csv")
+    test = pd.read_csv(csv_path, header=None)
+    print(test.info())
 
     # sns.pairplot(data, diag_kind="kde", palette="bright")
     # pd.plotting.scatter_matrix(data, figsize=(8, 8))
     # plt.show()
 
-    return data
+    return train, test
 
 
-def analyzeCluster(data, n_clusters):
+def saveData(data):
+    csv_path = os.path.join(os.getcwd(), "data/output_test.csv")
+    data = pd.Series(data)
+    data.to_csv(csv_path, index=False)
+    print("----------------output value_counts")
+    print(data.value_counts())
+
+
+def runKMeans(data, n_clusters=10):
     kmeans_per_k = [KMeans(n_clusters=_k, random_state=42).fit(data) for _k in range(1, n_clusters)]
 
     # inertias = [model.inertia_ for model in kmeans_per_k]
@@ -92,7 +103,7 @@ def analyzeCluster(data, n_clusters):
     plt.show()
 
 
-def plot3D(_x, y, center, n_clusters=7):
+def plot3D(_x, y, center, n_clusters, name="scatter3d-1"):
     plt.figure(figsize=(12, 10))
     ax = plt.axes(projection="3d")
     colors = cm.rainbow(np.linspace(0, 1, n_clusters))
@@ -101,8 +112,8 @@ def plot3D(_x, y, center, n_clusters=7):
         ax.scatter(xs[:, 0], xs[:, 1], xs[:, 2], marker="o", s=2, color=colors[_k])
         ax.scatter(center[_k, 0], center[_k, 1], center[_k, 2], marker="*", s=500, color=colors[_k])
     plt.tight_layout()
-    plt.savefig("images/scatter3d.png", format="png", dpi=300)
-    # plt.show()
+    plt.savefig(f"images/{name}.png", format="png", dpi=300)
+    plt.show()
 
 
 def runGaussianMixture(X):
@@ -134,7 +145,7 @@ def runGaussianMixture(X):
 
 def runVariationalBayesianGaussian(X):
     bgm = BayesianGaussianMixture(
-        n_components=12,
+        n_components=10,
         n_init=2,
         max_iter=10000,
         init_params="kmeans",
@@ -143,43 +154,54 @@ def runVariationalBayesianGaussian(X):
         random_state=42,
     )
     bgm.fit(X)
-    print(bgm.weights_)
     print(np.round(bgm.weights_, 2))
-    # print(bgm.means_)
-    # print(bgm.covariances_)
+    print(np.round(bgm.means_, 2))
     print(bgm.converged_)
     print(bgm.n_iter_)
 
 
 if __name__ == "__main__":
-    X = readData()
+    # read input_train, input_test data
+    X, X_test = readData()
 
+    # normalization
     scaler = StandardScaler()
-    X_norm = pd.DataFrame(scaler.fit_transform(X))
+    X_norm = scaler.fit_transform(X)
+    X_norm_test = scaler.transform(X_test)
 
+    # runKMeans(X_norm)
+    # runGaussianMixture(X_norm)
+    # runVariationalBayesianGaussian(X_norm)
+
+    # fix the number of cluster to 4
+    clusters = 4
+
+    gm = GaussianMixture(n_components=clusters, n_init=30, random_state=42).fit(X_norm)
+    y_pred_gm = gm.predict(X_norm_test)
+    center_gm = scaler.inverse_transform(gm.means_)
+    print(np.around(center_gm, 1))
+
+    # save output_test.csv
+    saveData(y_pred_gm)
+
+    # dimension reduction to 3 and plot scatter distribution
     pca = PCA(n_components=0.7)
     X_reduced = pca.fit_transform(X_norm)
     X_recoverd = pca.inverse_transform(X_reduced)
-    # print(np.cumsum(pca.explained_variance_ratio_))
+    print(np.cumsum(pca.explained_variance_ratio_))
 
-    # analyzeCluster(X_reduced, n_clusters=10)
-    runGaussianMixture(X_norm)
-    runVariationalBayesianGaussian(X_norm)
+    kmeans = KMeans(n_clusters=clusters, random_state=42).fit(X_reduced)
+    y_pred_kmeans = kmeans.predict(X_reduced)
+    center_kmeans = kmeans.cluster_centers_
+    print(np.around(center_kmeans, 2))
 
-    # kmeans = KMeans(n_clusters=3, random_state=42).fit(X_reduced)
-    # y_pred = kmeans.predict(X_reduced)
-    # print(kmeans.cluster_centers_)
+    gm = GaussianMixture(n_components=clusters, n_init=30, random_state=42).fit(X_reduced)
+    y_pred_gm = gm.predict(X_reduced)
+    center_gm = gm.means_
 
-    # gm = GaussianMixture(n_components=3, n_init=30, random_state=42)
-    # gm.fit(X)
+    print(np.around(gm.weights_, 2))
+    print(np.around(gm.means_, 2))
+    print(gm.converged_, gm.n_iter_)
 
-    # print(gm.means_)
-    # print(gm.weights_)
-    # print(gm.covariances_)
-    # print(gm.converged_)
-    # print(gm.n_iter_)
-    # print(gm.predict(X))
-    # score = gm.score_samples(X)
-    # print(score)
-
-    # plot3D(X_reduced, y_pred, kmeans.cluster_centers_, n_clusters=3)
+    # plot3D(X_reduced, y_pred_kmeans, center_kmeans, n_clusters=clusters, name="scatter-kmeans")
+    # plot3D(X_reduced, y_pred_gm, center_gm, n_clusters=clusters, name="scatter-gm")
