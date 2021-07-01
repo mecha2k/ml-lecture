@@ -10,7 +10,6 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.decomposition import PCA
 from sklearn.mixture import GaussianMixture
 from sklearn.mixture import BayesianGaussianMixture
-from matplotlib.colors import LogNorm
 from matplotlib.ticker import FixedLocator, FixedFormatter
 from matplotlib import cm
 
@@ -27,6 +26,7 @@ def readData():
 
     sns.pairplot(train, diag_kind="kde", palette="bright")
     plt.savefig("images/train_data.png", format="png", dpi=300)
+    plt.show()
 
     return train, test
 
@@ -48,7 +48,7 @@ def runKMeans(data, n_clusters=10):
     plt.plot(range(2, n_clusters), silhouette_scores, "bo-")
     plt.xlabel("$k$", fontsize=14)
     plt.ylabel("Silhouette score", fontsize=14)
-    plt.savefig("images/silhouette.png", format="png", dpi=300)
+    plt.savefig("images/silhouette_score.png", format="png", dpi=300)
     plt.show()
 
     plt.figure(figsize=(10, 8))
@@ -106,13 +106,13 @@ def plot3D(_x, y, center, n_clusters, name="scatter3d-1"):
     plt.show()
 
 
-def runGaussianMixture(X):
+def runGaussianMixture(X_):
     gms_per_k = [
-        GaussianMixture(n_components=k, n_init=10, random_state=42).fit(X) for k in range(1, 11)
+        GaussianMixture(n_components=k, n_init=10, random_state=42).fit(X_) for k in range(1, 11)
     ]
 
-    bics = [model.bic(X) for model in gms_per_k]
-    aics = [model.aic(X) for model in gms_per_k]
+    bics = [model.bic(X_) for model in gms_per_k]
+    aics = [model.aic(X_) for model in gms_per_k]
 
     plt.figure(figsize=(8, 3))
     plt.plot(range(1, 11), bics, "bo-", label="BIC")
@@ -133,7 +133,7 @@ def runGaussianMixture(X):
     plt.show()
 
 
-def runVariationalBayesianGaussian(X):
+def runVariationalBayesianGaussian(X_):
     bgm = BayesianGaussianMixture(
         n_components=10,
         n_init=2,
@@ -143,7 +143,7 @@ def runVariationalBayesianGaussian(X):
         verbose=False,
         random_state=42,
     )
-    bgm.fit(X)
+    bgm.fit(X_)
     print(np.round(bgm.weights_, 2))
     print(np.round(bgm.means_, 2))
     print(bgm.converged_)

@@ -25,7 +25,7 @@ def readData():
     test = pd.read_csv(csv_path, header=None)
     print(test.info())
 
-    # sns.pairplot(data, diag_kind="kde", palette="bright")
+    # sns.pairplot(train, diag_kind="kde", palette="bright")
     # pd.plotting.scatter_matrix(data, figsize=(8, 8))
     # plt.show()
 
