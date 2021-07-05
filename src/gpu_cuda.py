@@ -1,7 +1,6 @@
 import tensorflow
 from tensorflow.python.client import device_lib
 import torch
-
 import cv2
 import sys
 

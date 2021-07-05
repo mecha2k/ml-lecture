@@ -1,10 +1,10 @@
+import torch
 import argparse
 import collections
 import time
 import sys
 import gym
 import numpy as np
-import torch
 
 from libc import dqn_model, wrappers
 
