@@ -95,3 +95,13 @@ print(df.keys())
 print(df.values())
 for arg in df:
     print(arg, df[arg])
+
+
+import re
+
+text = "Booked 10 times today"
+item = re.search("\d+", text)
+print(item)
+item = item.group()
+print(item)
+

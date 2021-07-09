@@ -1,4 +1,5 @@
-import os, random
+import os
+import random
 import pymysql
 from dotenv import load_dotenv
 
