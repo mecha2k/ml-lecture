@@ -16,7 +16,9 @@ SPLASH_URL = "http://localhost:8050/"
 DUPEFILTER_CLASS = "scrapy_splash.SplashAwareDupeFilter"
 HTTPCACHE_STORAGE = "scrapy_splash.SplashAwareFSCacheStorage"
 
-USER_AGENT_LIST = "/toscrape/useragents.txt"
+LOG_LEVEL = "DEBUG"
+LOG_FILE = "results.log"
+USER_AGENT_LIST = "toscrape/useragents.txt"
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 # USER_AGENT = 'toscrape (+http://www.yourdomain.com)'
@@ -57,19 +59,21 @@ SPIDER_MIDDLEWARES = {
 # Enable or disable downloader middlewares
 # See https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 DOWNLOADER_MIDDLEWARES = {
-    # "toscrape.middlewares.ToscrapeDownloaderMiddleware": 543,
+    "toscrape.middlewares.ToscrapeDownloaderMiddleware": 543,
     "scrapy_splash.SplashCookiesMiddleware": 723,
     "scrapy_splash.SplashMiddleware": 725,
     "scrapy.downloadermiddlewares.httpcompression.HttpCompressionMiddleware": 810,
-    "scrapy.contrib.downloadermiddleware.useragent.UserAgentMiddleware": None,
-    "random_useragent.RandomUserAgentMiddleware": 400,
+    # "scrapy.contrib.downloadermiddleware.useragent.UserAgentMiddleware": None,
+    # "random_useragent.RandomUserAgentMiddleware": 400,
 }
 
 # Enable or disable extensions
 # See https://docs.scrapy.org/en/latest/topics/extensions.html
-# EXTENSIONS = {
-#    'scrapy.extensions.telnet.TelnetConsole': None,
-# }
+EXTENSIONS = {
+    "scrapy.extensions.telnet.TelnetConsole": None,
+    "toscrape.extensions.MonitorDownloadsExtension": 100,
+    "toscrape.extensions.DumpStatsExtension": 101,
+}
 
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
