@@ -67,6 +67,21 @@ def decorate_demo1(arg):
     return arg
 
 
+def decorate_doc(func):
+    def wrapper(*args):
+        print("excuted func: ", func.__name__)
+        print("args : ", args)
+        result = func(*args)
+        print("function call : ", result)
+        return result
+
+    return wrapper
+
+@decorate_doc
+def add_doc(a, b):
+    return a + b
+
+
 def main():
     arg_func()
     arg_func("apple", "orange")
@@ -88,6 +103,16 @@ def main():
 
     decorate_demo()
     decorate_demo1(3)
+
+    # add 함수를 인자로 받아서 wrapper 함수를 리턴
+    cooler_add = decorate_doc(add_doc)
+    # wrapper 함수를 실행시킨 결과임
+    result = cooler_add(3, 5)
+    print(result)
+
+    # decorator를 사용해서 실행
+    result = add_doc(3, 6)
+    print(result)
 
 
 if __name__ == "__main__":
