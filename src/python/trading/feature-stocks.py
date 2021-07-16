@@ -1,5 +1,7 @@
 import yfinance as yf
 import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
 import os
 
 
@@ -43,8 +45,60 @@ def load_asset_data():
     print(prices.shape, stocks.shape)
     assert prices.shape[1] == stocks.shape[0]
 
-    monthly_prices = prices.resample("M").last()
+    print(prices.head())
+    monthly_prices = prices.resample("1M").last()
+    print(monthly_prices.head())
     monthly_prices.info()
+
+    outlier_cutoff = 0.01
+    data = pd.DataFrame()
+    lags = [1, 2, 3, 6, 9, 12]
+    data = monthly_prices.pct_change(periods=lags[2]).stack()
+    print(data.head(n=10))
+    data = (
+        data.pipe(
+            lambda x: x.clip(
+                lower=x.quantile(q=outlier_cutoff, interpolation="linear"),
+                upper=x.quantile(q=1 - outlier_cutoff, interpolation="linear"),
+            )
+        )
+        .add(1)
+        .pow(1 / lags[2])
+        .sub(1)
+    )
+    print(data.head())
+    data = data.swaplevel().dropna()
+    print(data.head())
+    print(data.shape)
+
+    data = pd.DataFrame()
+    for lag in lags:
+        data[f"return_{lag}m"] = (
+            monthly_prices.pct_change(periods=lag)
+            .stack()
+            .pipe(
+                lambda x: x.clip(
+                    lower=x.quantile(outlier_cutoff), upper=x.quantile(1 - outlier_cutoff)
+                )
+            )
+            .add(1)
+            .pow(1 / lag)
+            .sub(1)
+        )
+    data = data.swaplevel().dropna()
+    print(data.info())
+    print(data.head())
+
+    min_obs = 120
+    nobs = data.groupby(level="ticker").size()
+    keep = nobs[nobs > min_obs].index
+    print(keep.shape)
+
+    data = data.loc[pd.IndexSlice[keep, :], :]
+    print(data.info())
+    cmap = sns.diverging_palette(10, 220, as_cmap=True)
+    sns.clustermap(data.corr("spearman"), annot=True, center=0, cmap=cmap)
+    plt.show()
 
 
 if __name__ == "__main__":
