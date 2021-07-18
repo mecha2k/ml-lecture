@@ -1,4 +1,3 @@
-import yfinance as yf
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
@@ -14,7 +13,7 @@ def load_asset_data():
     with pd.HDFStore(asset_file) as store:
         prices = store["quandl/wiki/prices"]
         stocks = store["us_equities/stocks"]
-        stocks.to_csv("stocks.csv")
+        stocks.to_csv("src/data/stocks.csv")
 
     prices.info()
     prices = prices.loc[pd.IndexSlice[str(start) : str(end), :], "adj_close"]
