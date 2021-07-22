@@ -25,7 +25,7 @@ def readData():
     print(test.info())
 
     sns.pairplot(train, diag_kind="kde", palette="bright")
-    plt.savefig("images/train_data.png", format="png", dpi=300)
+    plt.savefig("deeplearning/images/train_data.png", format="png", dpi=300)
     plt.show()
 
     return train, test
@@ -48,7 +48,7 @@ def runKMeans(data, n_clusters=10):
     plt.plot(range(2, n_clusters), silhouette_scores, "bo-")
     plt.xlabel("$k$", fontsize=14)
     plt.ylabel("Silhouette score", fontsize=14)
-    plt.savefig("images/silhouette_score.png", format="png", dpi=300)
+    plt.savefig("deeplearning/images/silhouette_score.png", format="png", dpi=300)
     plt.show()
 
     plt.figure(figsize=(10, 8))
@@ -89,7 +89,7 @@ def runKMeans(data, n_clusters=10):
         plt.title("$k={}$".format(k_), fontsize=14)
         plt.tight_layout()
 
-    plt.savefig("images/silhouette1.png", format="png", dpi=300)
+    plt.savefig("deeplearning/images/silhouette1.png", format="png", dpi=300)
     plt.show()
 
 
@@ -102,7 +102,7 @@ def plot3D(_x, y, center, n_clusters, name="scatter3d-1"):
         ax.scatter(xs[:, 0], xs[:, 1], xs[:, 2], marker="o", s=2, color=colors[_k])
         ax.scatter(center[_k, 0], center[_k, 1], center[_k, 2], marker="*", s=500, color=colors[_k])
     plt.tight_layout()
-    plt.savefig(f"images/{name}.png", format="png", dpi=300)
+    plt.savefig(f"deeplearning/images/{name}.png", format="png", dpi=300)
     plt.show()
 
 
@@ -129,7 +129,7 @@ def runGaussianMixture(X_):
         arrowprops=dict(facecolor="black", shrink=0.1),
     )
     plt.legend()
-    plt.savefig("images/aic_bic_vs_k_plot.png", format="png", dpi=300)
+    plt.savefig("deeplearning/images/aic_bic_vs_k_plot.png", format="png", dpi=300)
     plt.show()
 
 
