@@ -6,6 +6,8 @@ import numpy as np
 import datetime
 import os
 
+from icecream import ic
+
 
 def stats_models():
     duncan_prestige = sm.datasets.get_rdataset("Duncan", "carData")
@@ -14,22 +16,22 @@ def stats_models():
     X = sm.add_constant(X)
     model = sm.OLS(Y, X)
     results = model.fit()
-    print(results.params)
-    print(results.tvalues)
-    print(results.t_test([1, 0]))
+    ic(results.params)
+    ic(results.tvalues)
+    ic(results.t_test([1, 0]))
 
 
 def fama_french():
     datasets = get_available_datasets()
-    print("No. of datasets:{0}".format(len(datasets)))
+    ic("No. of datasets:{0}".format(len(datasets)))
 
     ff_factor = "F-F_Research_Data_5_Factors_2x3"
     ff_factor_data = pdr.DataReader(ff_factor, "famafrench", start="2010", end="2017-12")
-    print(ff_factor_data["DESCR"])
+    ic(ff_factor_data["DESCR"])
 
     ff_portfolio = "17_Industry_Portfolios"
     ff_portfolio_data = pdr.DataReader(ff_portfolio, "famafrench", start="2010", end="2017-12")
-    print(ff_portfolio_data["DESCR"])
+    ic(ff_portfolio_data["DESCR"])
 
     ff_factor_data[0].to_csv("data/F-F_Research_Data_5_Factors_2x3.csv")
     ff_portfolio_data[0].to_csv("data/17_Industry_Portfolios.csv")
@@ -41,18 +43,18 @@ def fama_french():
 def get_yahoo_data():
     apple = yf.Ticker("AAPL")
     apple = yf.download("AAPL", start="2019-01-01")
-    print(apple.info)
+    ic(apple.info)
 
-    print(datetime.datetime.now())
+    ic(datetime.datetime.now())
 
     start = datetime.datetime(2010, 1, 1)
     end = datetime.datetime(2011, 1, 1)
-    print(start, end)
+    ic(start, end)
 
     samsung = yf.Ticker("005930.KS")
     samsung = yf.download("005930.KS", start="2010-01-01", end="2011-01-01")
     samsung = yf.download("005930.KS", start=start, end=end)
-    print(samsung.info)
+    ic(samsung.info)
 
 
 if __name__ == "__main__":
