@@ -1,14 +1,20 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 import backtrader as bt
-import os
-import sys
 import matplotlib.pyplot as plt
+import pandas as pd
+import yfinance as yf
+import warnings
 
 from datetime import datetime
 from icecream import ic
 
-# Create a Stratey
+plt.style.use("seaborn-colorblind")
+plt.rcParams["figure.figsize"] = [10, 6]
+plt.rcParams["figure.dpi"] = 150
+warnings.simplefilter(action="ignore", category=FutureWarning)
+
+
 class TestStrategy(bt.Strategy):
     params = (
         ("maperiod", 15),
@@ -90,42 +96,29 @@ class TestStrategy(bt.Strategy):
 
 
 if __name__ == "__main__":
-    cerebro = bt.Cerebro()
-    # Add a strategy
+    src_data = "data/yf_aapl.pkl"
+    start = datetime(2000, 1, 1)
+    end = datetime(2020, 12, 31)
+    try:
+        aapl = pd.read_pickle(src_data)
+        print("data reading from file...")
+    except FileNotFoundError:
+        aapl = yf.download("AAPL", start=start, end=end, auto_adjust=True)
+        aapl.to_pickle(src_data)
+
+    aapl_df = aapl["2018-1-1":"2018-12-31"]
+    data = bt.feeds.PandasData(dataname=aapl_df)
+    ic(aapl_df.head())
+
+    cerebro = bt.Cerebro(stdstats=True)
     cerebro.addstrategy(TestStrategy)
-
-    # Datas are in a subfolder of the samples. Need to find where the script is
-    # because it could have been called from anywhere
-    modpath = os.path.dirname(os.path.abspath(sys.argv[0]))
-    ic(modpath)
-    datapath = os.path.join(os.getcwd(), "data/oracle.csv")
-    ic(datapath)
-
-    # Create a Data Feed
-    data = bt.feeds.YahooFinanceCSVData(
-        dataname=datapath,
-        # Do not pass values before this date
-        fromdate=datetime(2000, 1, 1),
-        # Do not pass values after this date
-        todate=datetime(2000, 12, 31),
-        reverse=False,
-    )
-    ic(data)
-
-    # Add the Data Feed to Cerebro
     cerebro.adddata(data)
-    # Set our desired cash start
     cerebro.broker.setcash(1000.0)
-    # Add a FixedSize sizer according to the stake
     cerebro.addsizer(bt.sizers.FixedSize, stake=10)
-    # Set the commission
     cerebro.broker.setcommission(commission=0.0)
 
     ic(f"start : {cerebro.broker.getvalue():.2f}")
     cerebro.run(maxcpus=16)
     ic(f"final : {cerebro.broker.getvalue():.2f}")
 
-    # Plot the result
-    # plt.figure(figsize=(12, 8))
-    cerebro.plot()
-    # plt.savefig("backtrader.png", format="png", dpi=300)
+    cerebro.plot(iplot=False, volume=True)
