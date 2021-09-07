@@ -14,3 +14,13 @@ D = A.dot(B.T)
 
 print(C)
 print(D)
+
+T = 20
+N = 20
+dt = T / N
+n_sims = 100
+time_step = np.linspace(start=dt, stop=T, num=N)
+time_steps = np.broadcast_to(time_step, (n_sims, N))
+print(time_step)
+print(time_steps)
+print(time_steps.shape)
