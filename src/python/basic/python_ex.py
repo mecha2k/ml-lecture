@@ -105,3 +105,6 @@ print(item)
 item = item.group()
 print(item)
 
+assets = ['google', 'apple']
+title = f"{' vs. '.join(assets)}"
+print(title)
