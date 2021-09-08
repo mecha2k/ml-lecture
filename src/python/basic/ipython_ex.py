@@ -45,6 +45,7 @@ portfolio_returns = pd.Series(np.dot(portfolio_weights, returns.T), index=return
 
 pf.create_simple_tear_sheet(portfolio_returns)
 pf.create_full_tear_sheet(portfolio_returns)
+pf.create_bayesian_tear_sheet(portfolio_returns)
 fig = pf.create_returns_tear_sheet(portfolio_returns, return_fig=True)
 fig.savefig("ch7_im2.png", dpi=300)
 
