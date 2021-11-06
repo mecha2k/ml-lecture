@@ -1,8 +1,23 @@
 import pandas as pd
 from datetime import datetime
 
-start = datetime(2018,1,1)
-end = datetime(2020,12,31)
+start = datetime(2018, 1, 1)
+end = datetime(2020, 12, 31)
 
 for tm in pd.date_range(start=start, end=end, freq="A"):
     print(tm.year)
+
+students = [
+    ("jack", 34, "Sydeny", "Australia"),
+    ("Riti", 30, "Delhi", "India"),
+    ("Vikas", 31, "Mumbai", "India"),
+    ("Neelu", 32, "Bangalore", "India"),
+    ("John", 16, "New York", "US"),
+    ("Mike", 17, "las vegas", "US"),
+]
+df = pd.DataFrame(
+    students, columns=["Name", "Age", "City", "Country"], index=["a", "b", "c", "d", "e", "f"]
+)
+print(df)
+mod_df = df.append({"Name": "Sahil", "Age": 22}, ignore_index=True)
+print(mod_df)
