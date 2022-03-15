@@ -3,10 +3,8 @@ import tensorflow as tf
 from transformers import AutoModel, AutoTokenizer
 from transformers import logging
 
-
 logging.set_verbosity(logging.ERROR)
-# logging.disable(logging.INFO)
-# logging.disable(logging.WARNING)
+
 
 # tokenizer = AutoTokenizer.from_pretrained("bert-base-cased")
 # encoded_input = tokenizer(
