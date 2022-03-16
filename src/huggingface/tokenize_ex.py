@@ -15,6 +15,10 @@ print(tokenizer.decode(encoded_input["input_ids"]))
 model = AutoModel.from_pretrained("klue/bert-base")
 tokenizer = AutoTokenizer.from_pretrained("klue/bert-base")
 
+model_name = "klue/bert-base"
+model = AutoModel.from_pretrained(model_name)
+tokenizer = AutoTokenizer.from_pretrained(model_name)
+
 batch_sentences = [
     "But what about second breakfast?",
     "15일 한국부동산원에 따르면 올해 2월 주택종합(아파트·연립주택·단독주택) 매매가격 동향을 조사한 결과",
