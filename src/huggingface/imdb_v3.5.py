@@ -2,12 +2,15 @@ import numpy as np
 import pandas as pd
 import tensorflow as tf
 import os
+
+from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
 from transformers import AutoTokenizer, TFAutoModelForSequenceClassification, TFAutoModel
 from transformers import logging, DataCollatorWithPadding
 from transformers import create_optimizer
 from datasets import load_dataset
 from pathlib import Path
 from sklearn.model_selection import train_test_split
+from sklearn.utils import shuffle
 from tqdm import tqdm
 
 logging.set_verbosity(logging.ERROR)
@@ -42,8 +45,11 @@ print(train_df["labels"].value_counts())
 
 train_df = train_df[:1000]
 
+
 tokenizer = AutoTokenizer.from_pretrained("distilbert-base-uncased")
-# model = TFAutoModel.from_pretrained("distilbert-base-uncased")
+model = TFAutoModel.from_pretrained("distilbert-base-uncased")
+print(model.config)
+print(model.config.seq_classif_dropout)
 
 # inputs = tokenizer("Hello, my dog is cute", return_tensors="tf")
 # print(inputs)
@@ -54,8 +60,9 @@ tokenizer = AutoTokenizer.from_pretrained("distilbert-base-uncased")
 
 
 epochs = 1
-batch_size = 128
+batch_size = 32
 max_len = 40
+num_classes = 2
 
 
 def make_review_data(df):
@@ -93,9 +100,52 @@ def format_dataset(input_ids, attention_masks, labels):
 
 datasets = tf.data.Dataset.from_tensor_slices((x_train[0], x_train[1], y_train))
 datasets = datasets.map(format_dataset, num_parallel_calls=4)
+datasets = datasets.shuffle(buffer_size=20480).batch(batch_size=batch_size)
 for data in datasets.take(1):
     print(data)
 
+train_dataset = datasets.take(round(0.9 * len(train_df)))
+valid_dataset = datasets.skip(round(0.9 * len(train_df)))
+
+input_ids = tf.keras.layers.Input(shape=(max_len,), dtype="int32", name="input_ids")
+attention_masks = tf.keras.layers.Input(shape=(max_len,), dtype="int32", name="attention_mask")
+embeddings = model(input_ids, attention_masks)[0]
+dropout = tf.keras.layers.Dropout(model.config.seq_classif_dropout)
+kernel_initializer = tf.keras.initializers.TruncatedNormal(model.config.initializer_range)
+classifier = tf.keras.layers.Dense(num_classes, kernel_initializer=kernel_initializer)
+outputs = dropout(embeddings)
+outputs = classifier(outputs)
+
+model = tf.keras.Model(inputs=[input_ids, attention_masks], outputs=outputs)
+print(model.layers[1])
+print(model.layers[2])
+model.layers[2].trainable = False
+model.summary()
+
+optimizer = tf.keras.optimizers.Adam(5e-5)
+loss = tf.keras.losses.CategoricalCrossentropy(from_logits=True)
+metric = tf.keras.metrics.CategoricalAccuracy("accuracy")
+model.compile(optimizer=optimizer, loss=loss, metrics=[metric])
+
+
+callbacks = [
+    EarlyStopping(monitor="val_accuracy", min_delta=0.0001, patience=2),
+    ModelCheckpoint(
+        "../data/distilbert_aclimdb_weights.h5",
+        monitor="val_accuracy",
+        verbose=1,
+        save_best_only=True,
+        save_weights_only=True,
+    ),
+]
+
+history = model.fit(
+    datasets,
+    epochs=epochs,
+    batch_size=batch_size,
+    validation_data=valid_dataset,
+    callbacks=callbacks,
+)
 
 # train_texts, val_texts, train_labels, val_labels = train_test_split(
 #     train_df["texts"].values, train_df["labels"].values, test_size=0.2
@@ -129,7 +179,7 @@ for data in datasets.take(1):
 #     def __init__(self, model_name, cache_dir, num_class):
 #         super().__init__()
 #         self.bert = TFBertModel.from_pretrained(model_name, cache_dir=cache_dir)
-#         self.dropout = tf.keras.layers.Dropout(self.bert.config.hidden_dropout_prob)
+#         self.dropout = tf.keras.layers.Dropout(self.bert.config.seq_classif_dropout)
 #         self.classifier = tf.keras.layers.Dense(
 #             num_class,
 #             kernel_initializer=tf.keras.initializers.TruncatedNormal(
