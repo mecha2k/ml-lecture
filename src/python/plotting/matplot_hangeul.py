@@ -1,22 +1,32 @@
 import numpy as np
 import tensorflow as tf
+import matplotlib as mpl
 import matplotlib.pyplot as plt
-from matplotlib.font_manager import fontManager
+import matplotlib.font_manager as fm
 
-font_list = [font.name for font in fontManager.ttflist if "na" in font.name]
-print(font_list)
+fonts = [(font.name, font.fname) for font in fm.fontManager.ttflist if "Nanum" in font.name]
+print(fonts[0][0])
+print(mpl.matplotlib_fname())
+
+font_path = "../../data/NanumBarunGothic.ttf"
+font = fm.FontProperties(fname=font_path, size=16)
 
 plt.style.use("seaborn")
 plt.rcParams["font.size"] = 16
 plt.rcParams["figure.dpi"] = 200
-plt.rcParams["font.family"] = "AppleGothic"  # "NanumBarunGothic"
+plt.rcParams["font.family"] = "NanumBarunGothic"
 plt.rcParams["axes.unicode_minus"] = False
 
 np.random.seed(42)
 tf.random.set_seed(42)
 
-# x = np.random.randn(100)
-# y = 2 * x + np.random.randn(100)
+x = np.random.randn(100)
+y = 2 * x + np.random.randn(100)
+
+plt.ylabel("가격", fontproperties=font)
+plt.title("가격변동 추이", fontproperties=font)
+plt.plot(x, y, "b-")
+plt.savefig("han_graph")
 
 # W = tf.Variable(np.random.randn())
 # b = tf.Variable(np.random.randn())
