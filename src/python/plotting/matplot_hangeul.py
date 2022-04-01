@@ -8,8 +8,12 @@ fonts = [(font.name, font.fname) for font in fm.fontManager.ttflist if "Nanum" i
 print(fonts[0][0])
 print(mpl.matplotlib_fname())
 
-font_path = "../../data/NanumBarunGothic.ttf"
-font = fm.FontProperties(fname=font_path, size=16)
+# font_path = "../../data/NanumBarunGothic.ttf"
+# font = fm.FontProperties(fname=font_path, size=16)
+# plt.ylabel("가격", fontproperties=font)
+# plt.title("가격변동 추이", fontproperties=font)
+# plt.plot(x, y, "b-")
+# plt.savefig("han_graph")
 
 plt.style.use("seaborn")
 plt.rcParams["font.size"] = 16
@@ -23,8 +27,8 @@ tf.random.set_seed(42)
 x = np.random.randn(100)
 y = 2 * x + np.random.randn(100)
 
-plt.ylabel("가격", fontproperties=font)
-plt.title("가격변동 추이", fontproperties=font)
+plt.ylabel("가격")
+plt.title("가격변동 추이")
 plt.plot(x, y, "b-")
 plt.savefig("han_graph")
 
