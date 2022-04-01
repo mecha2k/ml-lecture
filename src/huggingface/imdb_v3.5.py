@@ -139,13 +139,13 @@ callbacks = [
     ),
 ]
 
-history = model.fit(
-    datasets,
-    epochs=epochs,
-    batch_size=batch_size,
-    validation_data=valid_dataset,
-    callbacks=callbacks,
-)
+# history = model.fit(
+#     datasets,
+#     epochs=epochs,
+#     batch_size=batch_size,
+#     validation_data=valid_dataset,
+#     callbacks=callbacks,
+# )
 
 # train_texts, val_texts, train_labels, val_labels = train_test_split(
 #     train_df["texts"].values, train_df["labels"].values, test_size=0.2
