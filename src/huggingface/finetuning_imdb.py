@@ -48,4 +48,4 @@ model = TFAutoModelForSequenceClassification.from_pretrained(
 )
 model.compile(optimizer=optimizer)
 
-# model.fit(x=tf_train_dataset, validation_data=tf_validation_dataset, epochs=1, verbose=1)
+model.fit(x=tf_train_dataset, validation_data=tf_validation_dataset, epochs=1, verbose=1)

@@ -7,7 +7,7 @@ from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
 from transformers import AutoTokenizer, TFAutoModelForSequenceClassification, TFAutoModel
 from transformers import logging, DataCollatorWithPadding
 from transformers import create_optimizer
-from datasets import load_dataset
+# from datasets import load_dataset
 from pathlib import Path
 from sklearn.model_selection import train_test_split
 from sklearn.utils import shuffle
@@ -35,6 +35,8 @@ def read_imdb_split(split_dir):
 
 # train_df.to_pickle("../data/aclImdb/train.pkl")
 # test_df.to_pickle("../data/aclImdb/test.pkl")
+
+print(os.getcwd())
 
 train_df = pd.read_pickle("../data/aclImdb/train.pkl")
 test_df = pd.read_pickle("../data/aclImdb/test.pkl")
