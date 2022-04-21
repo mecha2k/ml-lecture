@@ -55,7 +55,7 @@ class ToscrapeSpiderMiddleware:
             yield r
 
     def spider_opened(self, spider):
-        spider.logger.info('Spider opened: %s' % spider.name)
+        spider.logger.info("Spider opened: %s" % spider.name)
 
 
 class ToscrapeDownloaderMiddleware:
@@ -102,18 +102,19 @@ class ToscrapeDownloaderMiddleware:
         pass
 
     def spider_opened(self, spider):
-        spider.logger.info('Spider opened: %s' % spider.name)
+        spider.logger.info("Spider opened: %s" % spider.name)
 
 
 class RotateUserAgentMiddleware(object):
     """Rotate user-agent for each request."""
+
     def __init__(self, user_agents):
         self.enabled = False
         self.user_agents = user_agents
 
     @classmethod
     def from_crawler(cls, crawler):
-        user_agents = crawler.settings.get('USER_AGENT_CHOICES', [])
+        user_agents = crawler.settings.get("USER_AGENT_CHOICES", [])
         if not user_agents:
             raise NotConfigured("USER_AGENT_CHOICES not set or empty")
         o = cls(user_agents)
@@ -121,9 +122,9 @@ class RotateUserAgentMiddleware(object):
         return o
 
     def spider_opened(self, spider):
-        self.enabled = getattr(spider, 'rotate_user_agent', self.enabled)
+        self.enabled = getattr(spider, "rotate_user_agent", self.enabled)
 
     def process_request(self, request, spider):
         if not self.enabled or not self.user_agents:
             return
-        request.headers['user-agent'] = choice(self.user_agents)
+        request.headers["user-agent"] = choice(self.user_agents)

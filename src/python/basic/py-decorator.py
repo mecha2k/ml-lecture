@@ -77,6 +77,7 @@ def decorate_doc(func):
 
     return wrapper
 
+
 @decorate_doc
 def add_doc(a, b):
     return a + b

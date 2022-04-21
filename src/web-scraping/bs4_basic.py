@@ -43,4 +43,3 @@ for label in labels:
 labels = soup.select("#wrapper > section > div > div > div > div > div > label")
 for label in labels:
     print(label.get_text())
-

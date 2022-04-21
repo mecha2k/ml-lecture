@@ -35,8 +35,8 @@ def handle_data(context, data):
 
 
 if __name__ == "__main__":
-    start = pd.Timestamp('2014')
-    end = pd.Timestamp('2018')
+    start = pd.Timestamp("2014")
+    end = pd.Timestamp("2018")
 
     sp500 = pdr.DataReader("SP500", "fred", start, end).SP500
     benchmark_returns = sp500.pct_change()

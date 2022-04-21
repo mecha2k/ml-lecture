@@ -41,7 +41,7 @@ pong_dict = {
     "replay_size": 100000,
     "replay_initial": 10000,
     "target_net_sync": 1000,
-    "epsilon_frames": 10 ** 5,
+    "epsilon_frames": 10**5,
     "epsilon_start": 1.0,
     "epsilon_final": 0.02,
     "learning_rate": 0.0001,
@@ -105,6 +105,6 @@ print(item)
 item = item.group()
 print(item)
 
-assets = ['google', 'apple']
+assets = ["google", "apple"]
 title = f"{' vs. '.join(assets)}"
 print(title)

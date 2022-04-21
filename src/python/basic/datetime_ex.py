@@ -16,7 +16,9 @@ students = [
     ("John", 16, "New York", "US"),
     ("Mike", 17, "las vegas", "US"),
 ]
-df = pd.DataFrame(students, columns=["Name", "Age", "City", "Country"], index=["a", "b", "c", "d", "e", "f"])
+df = pd.DataFrame(
+    students, columns=["Name", "Age", "City", "Country"], index=["a", "b", "c", "d", "e", "f"]
+)
 print(df)
 mod_df = df.append({"Name": "Sahil", "Age": 22}, ignore_index=True)
 print(mod_df)
