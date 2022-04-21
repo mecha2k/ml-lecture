@@ -15,7 +15,7 @@ soup = BeautifulSoup(html.text, "lxml")
 items = soup.find("ul", class_="list_news").find_all("li", class_="bx")
 print(len(items))
 
-file = open("soup.txt", "w", encoding="utf8", newline="\n")
+file = open("soup.txt", "w", encoding="utf8", newline="")
 for item in items:
     press = item.find("div", class_="info_group").a.text.split()[0]
     news_url = item.find_all("a", class_="info")[1]["href"]
@@ -33,7 +33,7 @@ for item in items:
     print(date_time)
     print(content.strip())
 
-    file.write(press + "\n")
+    file.write(press)
     file.write(news_url + "\n")
     file.write(title + "\n")
     file.write(date_time + "\n")
