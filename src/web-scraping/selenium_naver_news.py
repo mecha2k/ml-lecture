@@ -3,7 +3,11 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from dotenv import load_dotenv
+from bs4 import BeautifulSoup
+import time
 import os
+
+import soupsieve
 
 print(selenium.__version__)
 
@@ -41,14 +45,18 @@ driver.get("https://www.naver.com/")
 # driver.refresh()
 
 elem = driver.find_element(by=By.ID, value="query")
-print(elem)
-
 elem.send_keys("삼성전자 주가")
 elem.send_keys(Keys.ENTER)
+time.sleep(0.5)
+
+html = driver.page_source
+soup = BeautifulSoup(html, "html.parser")
+items = soup.find_all("a", class_="news_tit")
+for item in items:
+    print(item.text)
 
 elem = driver.find_element(by=By.TAG_NAME, value="a")
 print(elem.get_attribute("href"))
-
 elem = driver.find_element(by=By.CLASS_NAME, value="list_news")
 print(elem.text)
 
