@@ -16,4 +16,3 @@ class HemnetSpider(scrapy.Spider):
     def parseInnerPage(self, response):
         streetName = response.css("h1.property-address__street::text").get()
         price = response.css("p.property-info__price::text").get()
-        print(response.text)
