@@ -7,7 +7,7 @@ class HemnetSpider(scrapy.Spider):
 
     def parse(self, response):
         for res in response.css("ul.normal-results > normal-results__hit > a::attr('href')"):
-            yield scrapy.Request(url=res.get(), callback=self.parseInner)
+            yield scrapy.Request(url=res.get(), callback=self.parseInnerPage)
 
         nextPage = response.css("a.next_page::attr('href')").get()
         if nextPage is not None:
