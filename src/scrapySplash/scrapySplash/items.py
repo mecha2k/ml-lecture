@@ -6,7 +6,7 @@
 import scrapy
 
 
-class Scrapy01Item(scrapy.Item):
+class ScrapysplashItem(scrapy.Item):
     # define the fields for your item here like:
-    title = scrapy.Field()
-    contents = scrapy.Field()
+    # name = scrapy.Field()
+    pass
