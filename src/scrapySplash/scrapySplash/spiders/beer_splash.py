@@ -17,4 +17,5 @@ class BeerSpider(scrapy.Spider):
                 "name": product.css("h4::text").get(),
                 "price": product.css("span.price::text").get(),
             }
-
+            name = product.css("h4::text").get()
+            self.log(name)
