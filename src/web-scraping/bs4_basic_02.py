@@ -14,4 +14,3 @@ for event in events:
     location = event.find("span", class_="event-location").text
     time = event.find("time").text
     print(details, "|", location, "|", time)
-
