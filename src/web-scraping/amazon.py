@@ -11,7 +11,6 @@ response.html.render(sleep=1)
 
 items = {
     "title": response.html.find("#productTitle", first=True).text,
-
     # "title": response.html.xpath(
     #     "//*[@id='search']/div[1]/div[1]/div/span[3]/div[2]/div[2]/div/div/div/div/div/div[2]/div/div/div[1]/h2/a/span",
     #     first=True,
