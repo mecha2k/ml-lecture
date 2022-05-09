@@ -54,11 +54,12 @@ if __name__ == "__main__":
         charset="utf8",
         port=3306,
     )
+    print(conn)
+    print(make_sample())
 
     data = []
     for i in range(1000):
         data.append(make_sample())
-    print(data)
 
     with conn:
         cursor = conn.cursor()
