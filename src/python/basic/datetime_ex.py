@@ -29,3 +29,9 @@ print(start_str)
 ticker = "A005930"
 ticker = re.findall(r"\d+", ticker)
 print(ticker[0])
+
+# Return the current time in UTC
+print(datetime.utcnow())
+
+def alculateDaysBetweenDates(begin, end):
+    return (end - begin).days
