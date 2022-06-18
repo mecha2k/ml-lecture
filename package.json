@@ -1,0 +1,22 @@
+{
+  "name": "ml-lecture",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mecha2k/ml-lecture.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mecha2k/ml-lecture/issues"
+  },
+  "homepage": "https://github.com/mecha2k/ml-lecture#readme",
+  "dependencies": {
+    "xhr2": "^0.2.1"
+  }
+}
