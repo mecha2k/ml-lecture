@@ -20,7 +20,9 @@ df = pd.DataFrame(
     students, columns=["Name", "Age", "City", "Country"], index=["a", "b", "c", "d", "e", "f"]
 )
 print(df)
-mod_df = df.append({"Name": "Sahil", "Age": 22}, ignore_index=True)
+# mod_df = df.append({"Name": "Sahil", "Age": 22}, ignore_index=True)
+mod_df = pd.DataFrame({"Name": ["Sahil"], "Age": [22]})
+mod_df = pd.concat([df, mod_df], ignore_index=True)
 print(mod_df)
 
 start_str = start.strftime("%Y%m%d")
