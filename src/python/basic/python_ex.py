@@ -108,3 +108,6 @@ print(item)
 assets = ["google", "apple"]
 title = f"{' vs. '.join(assets)}"
 print(title)
+
+
+print(zip(range(5)))
