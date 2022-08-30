@@ -7,8 +7,10 @@ from torch.utils.data import DataLoader, random_split
 from torchmetrics.functional import accuracy
 from torchvision import transforms
 from torchvision.datasets import CIFAR10, MNIST
+import warnings
 import os
 
+warnings.filterwarnings("ignore", category=UserWarning)
 PATH_DATASETS = os.environ.get("PATH_DATASETS", "../data/mnist")
 BATCH_SIZE = 256 if torch.cuda.is_available() else 64
 print(PATH_DATASETS)
@@ -262,5 +264,5 @@ def use_lightning_datamodule():
 
 
 if __name__ == "__main__":
-    # use_lightning_module()
-    use_lightning_datamodule()
+    use_lightning_module()
+    # use_lightning_datamodule()
