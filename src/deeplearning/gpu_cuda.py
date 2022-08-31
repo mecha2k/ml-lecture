@@ -3,6 +3,10 @@ import torch
 import cv2
 import sys
 import platform
+import warnings
+
+
+warnings.filterwarnings("ignore", category=UserWarning)
 
 
 tf = tensorflow.compat.v1
@@ -30,8 +34,8 @@ print(f"{device} is available in torch")
 
 print(sys.version)
 print(platform.platform())
-print("MPS build : ", torch.backends.mps.is_built())
-print("MPS avail : ", torch.backends.mps.is_available())
+# print("MPS build : ", torch.backends.mps.is_built())
+# print("MPS avail : ", torch.backends.mps.is_available())
 
-device = torch.device("mps")
-sample = torch.randn(256, 256, device=device)
+# device = torch.device("mps")
+# sample = torch.randn(256, 256, device=device)
