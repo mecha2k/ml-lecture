@@ -1,5 +1,4 @@
 import tensorflow
-from tensorflow.python.client import device_lib
 import torch
 import cv2
 import sys
@@ -7,7 +6,6 @@ import sys
 
 tf = tensorflow.compat.v1
 sess = tf.Session(config=tf.ConfigProto(log_device_placement=True))
-print(device_lib.list_local_devices())
 print(tf.__version__)
 print("opencv version : ", cv2.__version__)
 print("opencv cuda count : ", cv2.cuda.getCudaEnabledDeviceCount())
