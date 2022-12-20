@@ -5,6 +5,7 @@ import sys
 import platform
 import warnings
 
+from tensorflow.python.client import device_lib
 
 warnings.filterwarnings("ignore", category=UserWarning)
 
@@ -12,6 +13,9 @@ warnings.filterwarnings("ignore", category=UserWarning)
 tf = tensorflow.compat.v1
 sess = tf.Session(config=tf.ConfigProto(log_device_placement=True))
 print(tf.__version__)
+print(device_lib.list_local_devices())
+
+
 print("opencv version : ", cv2.__version__)
 print("opencv cuda count : ", cv2.cuda.getCudaEnabledDeviceCount())
 try:
