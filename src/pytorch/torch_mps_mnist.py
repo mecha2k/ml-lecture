@@ -17,7 +17,10 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 device = torch.device("mps" if torch.backends.mps.is_available() else "cpu")
 print(f"{device} is available in torch")
 
-datasets = MNIST("../data/mnist", train=True, transform=transforms.ToTensor())
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+print(f"{device} is available in torch")
+
+datasets = MNIST("../data/mnist", train=True, transform=transforms.ToTensor(), download=True)
 mnist_train, mnist_valid = random_split(datasets, [55000, 5000])
 train_loader = DataLoader(mnist_train, batch_size=64, shuffle=True)
 
