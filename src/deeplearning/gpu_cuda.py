@@ -32,15 +32,16 @@ if gpus:
         print(e)
 
 print(torch.__version__)
-device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+if torch.cuda.is_available():
+    device = torch.device("cuda:0")
+elif torch.backends.mps.is_available():
+    device = torch.device("mps")
+else:
+    device = torch.device("cpu")
 print(f"{device} is available in torch")
-
 
 print(sys.version)
 print(platform.platform())
-print("MPS build : ", torch.backends.mps.is_built())
-print("MPS avail : ", torch.backends.mps.is_available())
 
-device = torch.device("mps")
-sample = torch.randn(256, 256, device=device)
+sample = torch.randn(256, 256).to(device)
 print(sample.shape)
