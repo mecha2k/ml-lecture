@@ -85,8 +85,8 @@ def check_GPU():
         tf_gpus = tf.config.list_physical_devices("GPU")
         for gpu in tf_gpus:
             tf.config.experimental.set_memory_growth(gpu, True)
-    except:
-        exit(0)
+    except RuntimeError as e:
+        exit(e)
 
 
 if __name__ == "__main__":
