@@ -65,8 +65,15 @@ if __name__ == "__main__":
 
     # 공분산계산
     covars = np.cov(returns)
-    R = (1 + exp_rets) ** 250 - 1  # 연율화
-    C = covars * 250  # 연율화
+    rets_annual = (1 + exp_rets) ** 250 - 1  # 연율화
+    covs_annual = covars * 250  # 연율화
 
     # 무위험 이자율
     rf = 0.015
+
+    print(
+        pd.DataFrame(
+            {"Return": rets_annual, "Weight (based on market cap)": weights}, index=tickers
+        ).T
+    )
+    print(pd.DataFrame(covs_annual, columns=tickers, index=tickers))
