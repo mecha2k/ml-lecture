@@ -30,12 +30,43 @@ endDate = datetime(2019, 12, 31)
 if __name__ == "__main__":
     filepath = "../../data/stock_data.pickle"
     if os.path.exists(filepath):
-        data = pd.read_pickle(filepath)
+        stockdata = pd.read_pickle(filepath)
+        print("Data opened successfully")
     else:
-        data = list()
+        stockdata = list()
         for ticker in tickers:
             df = yf.download(ticker, start=startDate, end=endDate)
-            data.append({"price": df, "marketcap": marketcap[ticker]})
+            stockdata.append({"price": df, "marketcap": marketcap[ticker]})
         with open(filepath, "wb") as outfile:
-            pickle.dump(data, outfile)
+            pickle.dump(stockdata, outfile)
             print(f"Data saved successfully to {filepath}")
+
+    prices = list()
+    for stock in stockdata:
+        prices.append(list(stock["price"]["Adj Close"]))
+
+    capitals = list(marketcap.values())
+    weights = np.array(capitals) / sum(capitals)  # 시가총액의 비율계산
+    prices = np.matrix(prices)
+    print(prices.shape)
+
+    # 수익률 행렬을 만들어 계산
+    rows, cols = prices.shape
+    returns = np.empty([rows, cols - 1])
+    for row in range(rows):
+        for col in range(cols - 1):
+            p0, p1 = prices[row, col], prices[row, col + 1]
+            returns[row, col] = (p1 / p0) - 1
+    print(returns.shape)
+
+    # 수익률계산
+    exp_rets = np.array([np.mean(returns[row, :]) for row in range(rows)])
+    print(exp_rets)
+
+    # 공분산계산
+    covars = np.cov(returns)
+    R = (1 + exp_rets) ** 250 - 1  # 연율화
+    C = covars * 250  # 연율화
+
+    # 무위험 이자율
+    rf = 0.015
