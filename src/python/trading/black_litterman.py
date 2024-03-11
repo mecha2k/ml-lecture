@@ -48,9 +48,11 @@ def solveFrontier(rets, covs):
         # 범위조건: 각 구성자산의 투자비중은 0~100% 사이
         # 제약조건: 전체 투자비중은 100%
         bnds = [(0, 1) for _ in range(n_rets)]
-        cons = ({'type': 'eq', 'fun': lambda wgt: sum(wgt) - 1})
+        cons = {"type": "eq", "fun": lambda wgt: sum(wgt) - 1}
         # 최적화 함수 minimize()은 최적화할 obj함수와 최적화를 시작할 초깃값을 인수로 받음
-        results = minimize(obj_func, weights, (rets, covs, rr), method='SLSQP', constraints=cons, bounds=bnds)
+        results = minimize(
+            obj_func, weights, (rets, covs, rr), method="SLSQP", constraints=cons, bounds=bnds
+        )
         if not results.success:
             raise BaseException(results.message)
         # 효율적 프런티어 평균과 분산리스트에
@@ -59,6 +61,7 @@ def solveFrontier(rets, covs):
         frontier_var.append(np.dot(np.dot(results.x, covs), results.x))
 
     return np.array(frontier_mean), np.array(frontier_var)
+
 
 # 무위험수익률, 수익률,공분산으로 샤프비율을 최대로 하는 접점포트폴리오 비중 계산
 def solveWeights(rets, covs, rf=0.015):
@@ -76,13 +79,16 @@ def solveWeights(rets, covs, rf=0.015):
     # 비중범위 : 0 ~ 100% (공매도나 차입조건이 없음)
     bnds = [(0, 1) for _ in range(len(rets))]
     # 제약조건은 비중합=100%
-    cons = ({'type': 'eq', 'fun': lambda wgt: sum(wgt) - 1})
+    cons = {"type": "eq", "fun": lambda wgt: sum(wgt) - 1}
     # 최적화
-    results = minimize(obj_func, weights, (rets, covs, rf), method='SLSQP', constraints=cons, bounds=bnds)
+    results = minimize(
+        obj_func, weights, (rets, covs, rf), method="SLSQP", constraints=cons, bounds=bnds
+    )
     if not results.success:
         raise BaseException(results.message)
 
     return results.x
+
 
 # 효율적 포트폴리오 최적화
 def optimizeFrontier(rets, covs, rf=0.015):
@@ -95,7 +101,37 @@ def optimizeFrontier(rets, covs, rf=0.015):
     eff_mean, eff_var = solveFrontier(rets, covs)
 
     # 비중, 접점포트폴리오의 평균/분산, 효율적 포트폴리오의 평균/분산
-    return {'weights':weights, 'tan_mean':tan_mean, 'tan_var':tan_var, 'eff_mean':eff_mean, 'eff_var':eff_var}
+    return {
+        "weights": weights,
+        "tan_mean": tan_mean,
+        "tan_var": tan_var,
+        "eff_mean": eff_mean,
+        "eff_var": eff_var,
+    }
+
+
+# 자산에 대한 투자자의 전망과 전망의 기대수익률을 행렬로 만든다
+def viewsMatrixPQ(tikers, views):
+    # 투자전망과 기대수익률 행렬, views[i][3]에는 기대수익률을 가리킴
+    viewsQ = [views[i][3] for i in range(len(views))]
+
+    # 전망행렬 P를 만들기 위해 구성자산 딕셔너리 작성
+    ticsdict = dict(enumerate(tikers))
+    ticsdict = dict(zip(ticsdict.values(), ticsdict.keys()))
+
+    # 투자전망
+    viewsP = np.zeros([len(tikers), len(views)])
+    for n, view in enumerate(views):
+        # 가령 전망이 ('MSFT', '>', 'GE', 0.02) 이라면
+        # views[i][0] <-- 'MSFT' --> name1
+        # views[i][1] <-- '>'
+        # views[i][2] <-- 'GE'   --> name2
+        # views[i][3] <-- '0.02'
+        name1, name2 = views[i][0], views[i][2]
+        P[i, nameToIndex[name1]] = +1 if views[i][1] == ">" else -1
+        P[i, nameToIndex[name2]] = -1 if views[i][1] == ">" else +1
+    # return np.array(Q), P
+
 
 if __name__ == "__main__":
     filepath = "../../data/stock_data.pickle"
@@ -151,7 +187,6 @@ if __name__ == "__main__":
     # 과거 데이터를 이용한 최적화
     optim1 = optimizeFrontier(rets_annual, covs_annual, rf)
 
-
     # 블랙-리터만 역최적화
     mean = sum(rets_annual * weights)
     var = np.dot(np.dot(weights, covs_annual), weights)
@@ -167,15 +202,15 @@ if __name__ == "__main__":
     # 균형기대수익률로 최적화
     optim2 = optimizeFrontier(eqPI + rf, covs_annual, rf)
 
-
     # 투자자 전망과 기대수익률 그리고 전망의 불확실성 계산
-    views = [('XOM', '>', 'JPM', 0.02), ('NFLX', '<', 'JNJ', 0.02)]
-    Q, P = CreateMatrixPQ(tickers, views)
+    # Q (kx1) = Views on Expected excess returns for some or alll assets
+    # P (kxk) = Link matrix, A matrix identifying which assets you have views about
+    views = [("XOM", ">", "JPM", 0.02), ("NFLX", "<", "JNJ", 0.02)]
+    Q, P = viewsMatrixPQ(tickers, views)
 
-    # 위험조정상수
+    # 위험조정상수 (~ 1/samples)
     tau = 0.025
 
     # 투자자 전망의 불확실성 계산
     # tau * P * C * transpose(P)
-    omega = np.dot(np.dot(np.dot(tau, P), C), np.transpose(P))
-
+    omega = tau * np.dot(np.dot(P, covs_annual), np.transpose(P))
