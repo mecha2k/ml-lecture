@@ -43,7 +43,7 @@ def solveFrontier(rets, covs, rf):
     # 수익률 최저~최대 사이를 반복
     for ret in np.linspace(min(rets), max(rets), num=20):
         # 최적화 함수에 전달할 초기값으로 동일비중으로 시작
-        weights = np.ones([n_rets]) / n_rets
+        weights = np.random.rand(n_rets)
         # 최적화 함수에 전달할 범위조건과 제약조건을 미리 준비
         # 범위조건: 각 구성자산의 투자비중은 0~100% 사이
         # 제약조건: 전체 투자비중은 100%
@@ -61,40 +61,38 @@ def solveFrontier(rets, covs, rf):
     return np.array(frontier_mean), np.array(frontier_var)
 
 # 무위험수익률, 수익률,공분산으로 샤프비율을 최대로 하는 접점포트폴리오 비중 계산
-def solveWeights(rets_annual, covs_annual, rf=0.015):
+def solveWeights(rets, covs, rf=0.015):
     # 최적비중계산 목적함수
-    def obj_func(weights, rets, covs, rf):
-        mean = sum(rets * weights)
-        var = np.dot(np.dot(weights, covs), weights)
+    def obj_func(x0, rets, covs, rf):
+        mean = sum(rets * x0)
+        var = np.dot(np.dot(x0, covs), x0)
         # 효용함수 : 샤프비율
         util = (mean - rf) / np.sqrt(var)
         # 효용함수 극대화 = 효용함수 역함수를 최소화
         return 1 / util
 
-    n_rets = len(rets_annual)  # 투자자산 갯수
-
-    # 동일비중으로 최적화 시작
-    weights = np.ones([n_rets]) / n_rets
-    # 비중범위는 0~100%사이 (공매도나 차입조건이 없음)
-    bnds = [(0, 1) for i in range(n_rets)]
+    # 초기값
+    weights = np.random.rand(len(rets))
+    # 비중범위 : 0 ~ 100% (공매도나 차입조건이 없음)
+    bnds = [(0, 1) for i in range(len(rets))]
     # 제약조건은 비중합=100%
     cons = ({'type': 'eq', 'fun': lambda wgt: sum(wgt) - 1})
     # 최적화
-    results = minimize(obj_func, weights, (rets_annual, covs_annual, rf), method='SLSQP', constraints=cons, bounds=bnds)
+    results = minimize(obj_func, weights, (rets, covs, rf), method='SLSQP', constraints=cons, bounds=bnds)
     if not results.success:
         raise BaseException(results.message)
 
     return results.x
 
 # 효율적 포트폴리오 최적화
-def optimizeFrontier(rets_annual, covs_annual, rf=0.015):
+def optimizeFrontier(rets, covs, rf=0.015):
     # 접점포트폴리오 계산
-    weights = solveWeights(rets_annual, covs_annual, rf)
+    weights = solveWeights(rets, covs, rf)
     # 투자비중으로 계산한 평균과 분산
-    tan_mean = sum(rets_annual * weights)
-    tan_var = np.dot(np.dot(rets_annual, covs_annual), weights)
+    tan_mean = sum(rets * weights)
+    tan_var = np.dot(np.dot(rets, covs), weights)
     # 효율적 포트폴리오 계산
-    eff_mean, eff_var = solveFrontier(rets_annual, covs_annual, rf)
+    eff_mean, eff_var = solveFrontier(rets, covs, rf)
 
     # 비중, 접점포트폴리오의 평균/분산, 효율적 포트폴리오의 평균/분산
     return {'weights':weights, 'tan_mean':tan_mean, 'tan_var':tan_var, 'eff_mean':eff_mean, 'eff_var':eff_var}
@@ -152,6 +150,5 @@ if __name__ == "__main__":
 
     # 과거 데이터를 이용한 최적화
     optim1 = optimizeFrontier(rets_annual, covs_annual, rf)
-    print(optim1)
 
 
