@@ -55,7 +55,7 @@ def solveFrontier(rets, covs):
             raise BaseException(results.message)
         # 효율적 프런티어 평균과 분산리스트에
         # 최적포트폴리오 수익률과 분산 추가
-        frontier_mean.append(ret)
+        frontier_mean.append(rr)
         frontier_var.append(np.dot(np.dot(results.x, covs), results.x))
 
     return np.array(frontier_mean), np.array(frontier_var)
@@ -151,4 +151,31 @@ if __name__ == "__main__":
     # 과거 데이터를 이용한 최적화
     optim1 = optimizeFrontier(rets_annual, covs_annual, rf)
 
+
+    # 블랙-리터만 역최적화
+    mean = sum(rets_annual * weights)
+    var = np.dot(np.dot(weights, covs_annual), weights)
+
+    # 위험회피계수
+    lmbda = (mean - rf) / var
+    print(f"LMBDA: {lmbda}")
+
+    # 내재균형초과수익률
+    eqPI = lmbda * np.dot(covs_annual, weights)
+    print(f"equilibrium PI: {eqPI}")
+
+    # 균형기대수익률로 최적화
+    optim2 = optimizeFrontier(eqPI + rf, covs_annual, rf)
+
+
+    # 투자자 전망과 기대수익률 그리고 전망의 불확실성 계산
+    views = [('XOM', '>', 'JPM', 0.02), ('NFLX', '<', 'JNJ', 0.02)]
+    Q, P = CreateMatrixPQ(tickers, views)
+
+    # 위험조정상수
+    tau = 0.025
+
+    # 투자자 전망의 불확실성 계산
+    # tau * P * C * transpose(P)
+    omega = np.dot(np.dot(np.dot(tau, P), C), np.transpose(P))
 
