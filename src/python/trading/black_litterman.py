@@ -27,30 +27,30 @@ startDate = datetime(2018, 1, 1)
 endDate = datetime(2019, 12, 31)
 
 
-# 무위험수익률, 수익률,공분산으로 효율적 프런티어 계산
-def solveFrontier(rets, covs, rf):
+# 무위험수익률, 수익률, 공분산으로 효율적 프런티어 계산
+def solveFrontier(rets, covs):
     # 최적비중계산 목적함수
-    def obj_func(weights, rets, covs, rf):
-        mean = sum(rets * weights)
-        var = np.dot(np.dot(weights, covs), weights)
+    def obj_func(x0, rets, covs, rr):
+        mean = sum(rets * x0)
+        var = np.dot(np.dot(x0, covs), x0)
         # 최적화 제약조건 페널티
-        penalty = 100 * abs(mean - rf)
+        penalty = 100 * abs(mean - rr)
         return var + penalty
 
     # 효율적 프론티어를 구성하는 평균-분산을 돌려줄 리스트 준비
     frontier_mean, frontier_var = [], []
     n_rets = len(rets)  # 투자자산 갯수
     # 수익률 최저~최대 사이를 반복
-    for ret in np.linspace(min(rets), max(rets), num=20):
+    for rr in np.linspace(min(rets), max(rets), num=20):
         # 최적화 함수에 전달할 초기값으로 동일비중으로 시작
         weights = np.random.rand(n_rets)
         # 최적화 함수에 전달할 범위조건과 제약조건을 미리 준비
         # 범위조건: 각 구성자산의 투자비중은 0~100% 사이
         # 제약조건: 전체 투자비중은 100%
-        bnds = [(0, 1) for i in range(n_rets)]
+        bnds = [(0, 1) for _ in range(n_rets)]
         cons = ({'type': 'eq', 'fun': lambda wgt: sum(wgt) - 1})
         # 최적화 함수 minimize()은 최적화할 obj함수와 최적화를 시작할 초깃값을 인수로 받음
-        results = minimize(obj_func, weights, (rets, covs, ret), method='SLSQP', constraints=cons, bounds=bnds)
+        results = minimize(obj_func, weights, (rets, covs, rr), method='SLSQP', constraints=cons, bounds=bnds)
         if not results.success:
             raise BaseException(results.message)
         # 효율적 프런티어 평균과 분산리스트에
@@ -74,7 +74,7 @@ def solveWeights(rets, covs, rf=0.015):
     # 초기값
     weights = np.random.rand(len(rets))
     # 비중범위 : 0 ~ 100% (공매도나 차입조건이 없음)
-    bnds = [(0, 1) for i in range(len(rets))]
+    bnds = [(0, 1) for _ in range(len(rets))]
     # 제약조건은 비중합=100%
     cons = ({'type': 'eq', 'fun': lambda wgt: sum(wgt) - 1})
     # 최적화
@@ -92,7 +92,7 @@ def optimizeFrontier(rets, covs, rf=0.015):
     tan_mean = sum(rets * weights)
     tan_var = np.dot(np.dot(rets, covs), weights)
     # 효율적 포트폴리오 계산
-    eff_mean, eff_var = solveFrontier(rets, covs, rf)
+    eff_mean, eff_var = solveFrontier(rets, covs)
 
     # 비중, 접점포트폴리오의 평균/분산, 효율적 포트폴리오의 평균/분산
     return {'weights':weights, 'tan_mean':tan_mean, 'tan_var':tan_var, 'eff_mean':eff_mean, 'eff_var':eff_var}
