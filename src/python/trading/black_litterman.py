@@ -115,10 +115,6 @@ def viewsMatrixPQ(tikers, views):
     # 투자전망과 기대수익률 행렬, views[i][3]에는 기대수익률을 가리킴
     viewsQ = [views[i][3] for i in range(len(views))]
 
-    # 전망행렬 P를 만들기 위해 구성자산 딕셔너리 작성
-    # ticsdict = dict(enumerate(tikers))
-    # ticsdict = sorted({value: key for key, value in ticsdict.items()})
-
     # 투자전망
     viewsP = np.zeros((len(views), len(tikers)))
     for n, view in enumerate(views):
