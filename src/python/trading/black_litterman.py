@@ -116,21 +116,21 @@ def viewsMatrixPQ(tikers, views):
     viewsQ = [views[i][3] for i in range(len(views))]
 
     # 전망행렬 P를 만들기 위해 구성자산 딕셔너리 작성
-    ticsdict = dict(enumerate(tikers))
-    ticsdict = dict(zip(ticsdict.values(), ticsdict.keys()))
+    # ticsdict = dict(enumerate(tikers))
+    # ticsdict = sorted({value: key for key, value in ticsdict.items()})
 
     # 투자전망
-    viewsP = np.zeros([len(tikers), len(views)])
+    viewsP = np.zeros((len(views), len(tikers)))
     for n, view in enumerate(views):
         # 가령 전망이 ('MSFT', '>', 'GE', 0.02) 이라면
         # views[i][0] <-- 'MSFT' --> name1
         # views[i][1] <-- '>'
         # views[i][2] <-- 'GE'   --> name2
         # views[i][3] <-- '0.02'
-        name1, name2 = views[i][0], views[i][2]
-        P[i, nameToIndex[name1]] = +1 if views[i][1] == ">" else -1
-        P[i, nameToIndex[name2]] = -1 if views[i][1] == ">" else +1
-    # return np.array(Q), P
+        viewsP[n, tickers.index(view[0])] = +1 if view[1] == ">" else -1
+        viewsP[n, tickers.index(view[2])] = -1 if view[1] == ">" else +1
+
+    return viewsP, viewsQ
 
 
 if __name__ == "__main__":
@@ -206,11 +206,16 @@ if __name__ == "__main__":
     # Q (kx1) = Views on Expected excess returns for some or alll assets
     # P (kxk) = Link matrix, A matrix identifying which assets you have views about
     views = [("XOM", ">", "JPM", 0.02), ("NFLX", "<", "JNJ", 0.02)]
-    Q, P = viewsMatrixPQ(tickers, views)
+    viewsP, viewsQ = viewsMatrixPQ(tickers, views)
+    print(views)
+    print(tickers)
+    print(viewsP)
+    print(viewsQ)
 
     # 위험조정상수 (~ 1/samples)
     tau = 0.025
 
     # 투자자 전망의 불확실성 계산
     # tau * P * C * transpose(P)
-    omega = tau * np.dot(np.dot(P, covs_annual), np.transpose(P))
+    omega = tau * np.dot(np.dot(viewsP, covs_annual), np.transpose(viewsP))
+    print(omega)
