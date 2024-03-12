@@ -130,9 +130,16 @@ def viewsMatrixPQ(tikers, views):
 
 
 def plotAssets(tickers, rets, covs, color="black"):
-    plt.scatter([covs[i, i] for i in range(len(tickers))], rets, marker="x", color=color)
+    plt.scatter([covs[i, i] for i in range(len(tickers))], rets, marker="*", color=color, s=6)
     for i in range(len(tickers)):
-        plt.text(covs[i, i], rets[i], "  %s" % tickers[i], verticalalignment="center", color=color)
+        plt.text(
+            covs[i, i],
+            rets[i],
+            "  %s" % tickers[i],
+            verticalalignment="center",
+            color=color,
+            fontsize="x-small",
+        )
 
 
 def plotFrontier(result, label=None, color="black"):
@@ -150,9 +157,9 @@ def plotFrontier(result, label=None, color="black"):
         result["eff_mean"],
         label=label,
         color=color,
-        linewidth=2,
-        marker="D",
-        markersize=6,
+        linewidth=1.2,
+        marker="o",
+        markersize=4,
     )
 
 
@@ -260,9 +267,9 @@ if __name__ == "__main__":
     plotAssets(tickers, rets_annual, covs_annual, color="blue")
     plotFrontier(optim1, label="Historical returns", color="blue")
     plotAssets(tickers, eqPI + rf, covs_annual, color="green")
-    plotFrontier(optim2, label="Implied returns", color="green")
+    # plotFrontier(optim2, label="Implied returns", color="green")
     plotAssets(tickers, bl_eqPI + rf, covs_annual, color="red")
-    plotFrontier(optim3, label="Implied returns (adjusted views)", color="red")
+    # plotFrontier(optim3, label="Implied returns (adjusted views)", color="red")
 
     # 차트 공통 속성 지정 (차트크기, 제목, 범례, 축이름 등)
     plt.rcParams["figure.figsize"] = (32, 24)
