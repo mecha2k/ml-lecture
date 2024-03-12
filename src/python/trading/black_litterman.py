@@ -148,6 +148,7 @@ def plotFrontier(result, label=None, color="black"):
         "tangent",
         verticalalignment="center",
         color=color,
+        fontsize="xx-small",
     )
     plt.scatter(result["tan_var"] ** 0.5, result["tan_mean"], marker="o", color=color)
     plt.plot(
@@ -157,7 +158,7 @@ def plotFrontier(result, label=None, color="black"):
         color=color,
         linewidth=2,
         marker="D",
-        markersize=8,
+        markersize=6,
     )
 
 
@@ -276,4 +277,4 @@ if __name__ == "__main__":
     plt.legend()
     plt.xlabel("Variance, $\sigma$")
     plt.ylabel("Mean, $\mu$")
-    plt.savefig("black_litterman")
+    plt.savefig("black_litterman", bbox_inches="tight", dpi=300)
