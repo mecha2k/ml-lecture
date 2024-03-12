@@ -264,24 +264,16 @@ if __name__ == "__main__":
 
     plotAssets(tickers, rets_annual, covs_annual, color="blue")
     plotFrontier(optim1, label="Historical returns", color="blue")
-
     plotAssets(tickers, eqPI + rf, covs_annual, color="green")
-    # plotFrontier(optim2, label="Implied returns", color="green")
-    #
+    plotFrontier(optim2, label="Implied returns", color="green")
     plotAssets(tickers, bl_eqPI + rf, covs_annual, color="red")
-    # plotFrontier(optim3, label="Implied returns (adjusted views)", color="red")
+    plotFrontier(optim3, label="Implied returns (adjusted views)", color="red")
 
-    # 차트에 공통된 속성을 지정 (차트크기, 제목, 범례, 축이름 등)
+    # 차트 공통 속성 지정 (차트크기, 제목, 범례, 축이름 등)
     plt.rcParams["figure.figsize"] = (32, 24)
     plt.grid(alpha=0.3, color="gray", linestyle="--", linewidth=1)
     plt.title("Portfolio optimization")
-    plt.legend(
-        [
-            "Historical returns(blue)",
-            "Implied returns(green)",
-            "Implied returns with adjusted views(red)",
-        ]
-    )
+    plt.legend()
     plt.xlabel("Variance, $\sigma$")
     plt.ylabel("Mean, $\mu$")
     plt.savefig("black_litterman")
