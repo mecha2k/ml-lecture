@@ -134,25 +134,23 @@ def viewsMatrixPQ(tikers, views):
 
 
 def plotAssets(tickers, rets, covs, color="black"):
-    plt.scatter([covs[i, i] ** 0.5 for i in range(len(tickers))], rets, marker="x", color=color)
+    plt.scatter([covs[i, i] for i in range(len(tickers))], rets, marker="x", color=color)
     for i in range(len(tickers)):
-        plt.text(
-            covs[i, i] ** 0.5, rets[i], "  %s" % tickers[i], verticalalignment="center", color=color
-        )
+        plt.text(covs[i, i], rets[i], "  %s" % tickers[i], verticalalignment="center", color=color)
 
 
 def plotFrontier(result, label=None, color="black"):
     plt.text(
-        result["tan_var"] ** 0.5,
+        result["tan_var"],
         result["tan_mean"],
         "tangent",
         verticalalignment="center",
         color=color,
         fontsize="xx-small",
     )
-    plt.scatter(result["tan_var"] ** 0.5, result["tan_mean"], marker="o", color=color)
+    plt.scatter(result["tan_var"], result["tan_mean"], marker="o", color=color)
     plt.plot(
-        result["eff_var"] ** 0.5,
+        result["eff_var"],
         result["eff_mean"],
         label=label,
         color=color,
