@@ -133,6 +133,34 @@ def viewsMatrixPQ(tikers, views):
     return viewsP, viewsQ
 
 
+def plotAssets(tickers, rets, covs, color="black"):
+    plt.scatter([covs[i, i] ** 0.5 for i in range(len(tickers))], rets, marker="x", color=color)
+    for i in range(len(tickers)):
+        plt.text(
+            covs[i, i] ** 0.5, rets[i], "  %s" % tickers[i], verticalalignment="center", color=color
+        )
+
+
+def plotFrontier(result, label=None, color="black"):
+    plt.text(
+        result["tan_var"] ** 0.5,
+        result["tan_mean"],
+        "tangent",
+        verticalalignment="center",
+        color=color,
+    )
+    plt.scatter(result["tan_var"] ** 0.5, result["tan_mean"], marker="o", color=color)
+    plt.plot(
+        result["eff_var"] ** 0.5,
+        result["eff_mean"],
+        label=label,
+        color=color,
+        linewidth=2,
+        marker="D",
+        markersize=8,
+    )
+
+
 if __name__ == "__main__":
     filepath = "../../data/stock_data.pickle"
     if os.path.exists(filepath):
@@ -217,5 +245,43 @@ if __name__ == "__main__":
 
     # 투자자 전망의 불확실성 계산
     # tau * P * C * transpose(P)
-    omega = tau * np.dot(np.dot(viewsP, covs_annual), np.transpose(viewsP))
+    omega = tau * viewsP @ covs_annual @ viewsP.T
     print(omega)
+
+    # 투자자 전망과 합쳐진 균형초과수익률 계산, 블랙-리터만 모델 최적화
+    bl1 = inv(tau * covs_annual) + viewsP.T @ inv(omega) @ viewsP
+    bl2 = inv(tau * covs_annual) @ eqPI + viewsP.T @ inv(omega) @ viewsQ
+    bl_eqPI = bl2 @ inv(bl1)
+
+    optim3 = optimizeFrontier(bl_eqPI + rf, covs_annual, rf)
+
+    print("Historical returns")
+    print(pd.DataFrame({"Weight": optim1["weights"]}, index=tickers).T)
+    print("Intrinsic implied returns")
+    print(pd.DataFrame({"Weight": optim2["weights"]}, index=tickers).T)
+    print("Implied returns with adjusted views (Black-Litterman)")
+    print(pd.DataFrame({"Weight": optim3["weights"]}, index=tickers).T)
+
+    plotAssets(tickers, rets_annual, covs_annual, color="blue")
+    plotFrontier(optim1, label="Historical returns", color="blue")
+
+    plotAssets(tickers, eqPI + rf, covs_annual, color="green")
+    # plotFrontier(optim2, label="Implied returns", color="green")
+    #
+    plotAssets(tickers, bl_eqPI + rf, covs_annual, color="red")
+    # plotFrontier(optim3, label="Implied returns (adjusted views)", color="red")
+
+    # 차트에 공통된 속성을 지정 (차트크기, 제목, 범례, 축이름 등)
+    plt.rcParams["figure.figsize"] = (32, 24)
+    plt.grid(alpha=0.3, color="gray", linestyle="--", linewidth=1)
+    plt.title("Portfolio optimization")
+    plt.legend(
+        [
+            "Historical returns(blue)",
+            "Implied returns(green)",
+            "Implied returns with adjusted views(red)",
+        ]
+    )
+    plt.xlabel("Variance, $\sigma$")
+    plt.ylabel("Mean, $\mu$")
+    plt.savefig("black_litterman")
