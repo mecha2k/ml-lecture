@@ -269,13 +269,6 @@ if __name__ == "__main__":
             style="italic",
             bbox=dict(facecolor="yellow", alpha=0.5),
         )
-        # plt.scatter(
-        #     plotdata["frontier"][i]["tan_var"],
-        #     plotdata["frontier"][i]["tan_mean"],
-        #     marker="o",
-        #     s=100,
-        #     color=plotdata["colors"][i],
-        # )
         plt.plot(
             plotdata["frontier"][i]["eff_var"],
             plotdata["frontier"][i]["eff_mean"],
