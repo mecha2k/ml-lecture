@@ -10,6 +10,10 @@ from scipy.optimize import minimize
 from datetime import datetime, timedelta
 
 
+# plt.style.use("seaborn")
+plt.rcParams["font.size"] = 16
+
+
 tickers = ["PFE", "INTC", "NFLX", "JPM", "XOM", "GOOG", "JNJ", "AAPL", "AMZN"]
 marketcap = {
     "PFE": 201102000000,
@@ -43,7 +47,7 @@ def solveFrontier(rets, covs):
     # 수익률 최저~최대 사이를 반복
     for rr in np.linspace(min(rets), max(rets), num=20):
         # 최적화 함수에 전달할 초기값으로 동일비중으로 시작
-        weights = np.random.rand(n_rets)
+        weights = [1 / len(rets)] * len(rets)
         # 최적화 함수에 전달할 범위조건과 제약조건을 미리 준비
         # 범위조건: 각 구성자산의 투자비중은 0~100% 사이
         # 제약조건: 전체 투자비중은 100%
@@ -75,7 +79,7 @@ def solveWeights(rets, covs, rf=0.015):
         return 1 / util
 
     # 초기값
-    weights = np.random.rand(len(rets))
+    weights = [1 / len(rets)] * len(rets)
     # 비중범위 : 0 ~ 100% (공매도나 차입조건이 없음)
     bnds = [(0, 1) for _ in range(len(rets))]
     # 제약조건은 비중합=100%
@@ -127,40 +131,6 @@ def viewsMatrixPQ(tikers, views):
         viewsP[n, tickers.index(view[2])] = -1 if view[1] == ">" else +1
 
     return viewsP, viewsQ
-
-
-def plotAssets(tickers, rets, covs, color="black"):
-    plt.scatter([covs[i, i] for i in range(len(tickers))], rets, marker="*", color=color, s=6)
-    for i in range(len(tickers)):
-        plt.text(
-            covs[i, i],
-            rets[i],
-            "  %s" % tickers[i],
-            verticalalignment="center",
-            color=color,
-            fontsize="x-small",
-        )
-
-
-def plotFrontier(result, label=None, color="black"):
-    plt.text(
-        result["tan_var"],
-        result["tan_mean"],
-        "tangent",
-        verticalalignment="center",
-        color=color,
-        fontsize="xx-small",
-    )
-    plt.scatter(result["tan_var"], result["tan_mean"], marker="o", color=color)
-    plt.plot(
-        result["eff_var"],
-        result["eff_mean"],
-        label=label,
-        color=color,
-        linewidth=1.2,
-        marker="o",
-        markersize=4,
-    )
 
 
 if __name__ == "__main__":
@@ -264,17 +234,60 @@ if __name__ == "__main__":
     print("Implied returns with adjusted views (Black-Litterman)")
     print(pd.DataFrame({"Weight": optim3["weights"]}, index=tickers).T)
 
-    plotAssets(tickers, rets_annual, covs_annual, color="blue")
-    plotFrontier(optim1, label="Historical returns", color="blue")
-    plotAssets(tickers, eqPI + rf, covs_annual, color="green")
-    # plotFrontier(optim2, label="Implied returns", color="green")
-    plotAssets(tickers, bl_eqPI + rf, covs_annual, color="red")
-    # plotFrontier(optim3, label="Implied returns (adjusted views)", color="red")
+    plt.clf()
+    plt.figure(figsize=(16, 10))
+    variance = [covs_annual[i, i] for i in range(len(tickers))]
+    plotdata = {
+        "rets": [rets_annual, eqPI + rf, bl_eqPI + rf],
+        "frontier": [optim1, optim2, optim3],
+        "colors": ["blue", "green", "red"],
+        "labels": [
+            "Historical returns",
+            "Implied returns",
+            "Implied returns (bl - adjusted views)",
+        ],
+    }
+    for i in range(len(plotdata["rets"])):
+        plt.scatter(variance, plotdata["rets"][i], marker="*", s=100, color=plotdata["colors"][i])
+        for j in range(len(tickers)):
+            plt.text(
+                variance[j],
+                plotdata["rets"][i][j],
+                f"   {tickers[j]}",
+                verticalalignment="center",
+                color=plotdata["colors"][i],
+                fontsize="x-small",
+            )
+        plt.text(
+            plotdata["frontier"][i]["tan_var"],
+            plotdata["frontier"][i]["tan_mean"],
+            "tangent",
+            verticalalignment="center",
+            color=plotdata["colors"][i],
+            fontsize="x-small",
+            fontweight="bold",
+            style="italic",
+            bbox=dict(facecolor="yellow", alpha=0.5),
+        )
+        # plt.scatter(
+        #     plotdata["frontier"][i]["tan_var"],
+        #     plotdata["frontier"][i]["tan_mean"],
+        #     marker="o",
+        #     s=100,
+        #     color=plotdata["colors"][i],
+        # )
+        plt.plot(
+            plotdata["frontier"][i]["eff_var"],
+            plotdata["frontier"][i]["eff_mean"],
+            label=plotdata["labels"][i],
+            marker="o",
+            markersize=8,
+            linewidth=2,
+            color=plotdata["colors"][i],
+        )
 
-    # 차트 공통 속성 지정 (차트크기, 제목, 범례, 축이름 등)
-    plt.rcParams["figure.figsize"] = (32, 24)
-    plt.grid(alpha=0.3, color="gray", linestyle="--", linewidth=1)
     plt.title("Portfolio optimization")
+    plt.grid(alpha=0.3, color="gray", linestyle="--", linewidth=1)
     plt.legend()
     plt.xlabel("Variance, $\sigma$")
     plt.ylabel("Mean, $\mu$")
