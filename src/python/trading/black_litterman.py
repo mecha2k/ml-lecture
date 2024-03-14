@@ -242,8 +242,8 @@ if __name__ == "__main__":
         "colors": ["blue", "green", "red"],
         "labels": [
             "Historical returns",
-            "Implied returns",
-            "Implied returns (bl - adjusted views)",
+            "Implied returns (market capital)",
+            "Implied returns (black litterman - adjusted views)",
         ],
     }
     for i in range(len(plotdata["rets"])):
@@ -260,7 +260,7 @@ if __name__ == "__main__":
         plt.text(
             plotdata["frontier"][i]["tan_var"],
             plotdata["frontier"][i]["tan_mean"],
-            "tangent",
+            "        optimum",
             verticalalignment="center",
             color=plotdata["colors"][i],
             fontsize="x-small",
@@ -276,6 +276,21 @@ if __name__ == "__main__":
             markersize=8,
             linewidth=2,
             color=plotdata["colors"][i],
+        )
+
+    mean0 = plotdata["frontier"][0]["eff_mean"]
+    vari0 = plotdata["frontier"][0]["eff_var"]
+    for i in range(len(mean0)):
+        sharp = (mean0[i] - rf) / np.sqrt(vari0[i])
+        plt.text(
+            vari0[i],
+            mean0[i],
+            f"{sharp:.3f}",
+            verticalalignment="center",
+            color=plotdata["colors"][0],
+            fontsize="x-small",
+            fontweight="bold",
+            style="italic",
         )
 
     plt.title("Portfolio optimization")
