@@ -36,14 +36,13 @@ def solveFrontier(rets, covs):
     # 최적비중계산 목적함수
     def obj_func(x0, rets, covs, rr):
         mean = sum(rets * x0)
-        var = np.dot(np.dot(x0, covs), x0)
+        var = x0.T @ covs @ x0
         # 최적화 제약조건 페널티
         penalty = 100 * abs(mean - rr)
         return var + penalty
 
     # 효율적 프론티어를 구성하는 평균-분산을 돌려줄 리스트 준비
     frontier_mean, frontier_var = [], []
-    n_rets = len(rets)  # 투자자산 갯수
     # 수익률 최저~최대 사이를 반복
     for rr in np.linspace(min(rets), max(rets), num=20):
         # 최적화 함수에 전달할 초기값으로 동일비중으로 시작
@@ -51,7 +50,7 @@ def solveFrontier(rets, covs):
         # 최적화 함수에 전달할 범위조건과 제약조건을 미리 준비
         # 범위조건: 각 구성자산의 투자비중은 0~100% 사이
         # 제약조건: 전체 투자비중은 100%
-        bnds = [(0, 1) for _ in range(n_rets)]
+        bnds = [(0, 1) for _ in range(len(rets))]
         cons = {"type": "eq", "fun": lambda wgt: sum(wgt) - 1}
         # 최적화 함수 minimize()은 최적화할 obj함수와 최적화를 시작할 초깃값을 인수로 받음
         results = minimize(
@@ -62,7 +61,7 @@ def solveFrontier(rets, covs):
         # 효율적 프런티어 평균과 분산리스트에
         # 최적포트폴리오 수익률과 분산 추가
         frontier_mean.append(rr)
-        frontier_var.append(np.dot(np.dot(results.x, covs), results.x))
+        frontier_var.append(results.x.T @ covs @ results.x)
 
     return np.array(frontier_mean), np.array(frontier_var)
 
@@ -72,7 +71,7 @@ def solveWeights(rets, covs, rf=0.015):
     # 최적비중계산 목적함수
     def obj_func(x0, rets, covs, rf):
         mean = sum(rets * x0)
-        var = np.dot(np.dot(x0, covs), x0)
+        var = x0.T @ covs @ x0
         # 효용함수 : 샤프비율
         util = (mean - rf) / np.sqrt(var)
         # 효용함수 극대화 = 효용함수 역함수를 최소화
@@ -100,7 +99,7 @@ def optimizeFrontier(rets, covs, rf=0.015):
     weights = solveWeights(rets, covs, rf)
     # 투자비중으로 계산한 평균과 분산
     tan_mean = sum(rets * weights)
-    tan_var = np.dot(np.dot(rets, covs), weights)
+    tan_var = weights.T @ covs @ weights
     # 효율적 포트폴리오 계산
     eff_mean, eff_var = solveFrontier(rets, covs)
 
@@ -189,14 +188,14 @@ if __name__ == "__main__":
 
     # 블랙-리터만 역최적화
     mean = sum(rets_annual * weights)
-    var = np.dot(np.dot(weights, covs_annual), weights)
+    var = weights.T @ covs_annual @ weights
 
     # 위험회피계수
     lmbda = (mean - rf) / var
     print(f"LMBDA: {lmbda}")
 
     # 내재균형초과수익률
-    eqPI = lmbda * np.dot(covs_annual, weights)
+    eqPI = lmbda * covs_annual @ weights
     print(f"equilibrium PI: {eqPI}")
 
     # 균형기대수익률로 최적화
