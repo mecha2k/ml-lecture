@@ -4,11 +4,15 @@ import cv2
 import sys
 import platform
 import warnings
+import os
 
 from tensorflow.python.client import device_lib
+from dotenv import load_dotenv
 
+
+load_dotenv(verbose=True)
 warnings.filterwarnings("ignore", category=UserWarning)
-
+print(os.getenv("TELEGRAM"))
 
 tf = tensorflow.compat.v1
 sess = tf.Session(config=tf.ConfigProto(log_device_placement=True))
