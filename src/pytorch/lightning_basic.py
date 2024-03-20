@@ -47,8 +47,8 @@ class LitAutoEncoder(L.LightningModule):
         return optimizer
 
 
-dataset = MNIST(os.getcwd(), download=True, transform=transforms.ToTensor())
-train_loader = DataLoader(dataset)
+dataset = MNIST("../data", download=True, transform=transforms.ToTensor())
+train_loader = DataLoader(dataset, num_workers=8, batch_size=128)
 
 autoencoder = LitAutoEncoder(Encoder(), Decoder())
 
