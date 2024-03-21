@@ -67,6 +67,7 @@ trainer = L.Trainer(max_epochs=1, max_steps=32)
 autoencoder = LAutoEncoder(Encoder(), Decoder())
 trainer.fit(model=autoencoder, train_dataloaders=train_loader)
 
+
 # Under the hood, the Lightning Trainer runs the following training loop on your behalf
 # autoencoder = LAutoEncoder(Encoder(), Decoder())
 # optimizer = autoencoder.configure_optimizers()
