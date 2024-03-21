@@ -10,6 +10,8 @@ from torchvision import transforms
 from torchvision.datasets import MNIST
 from torch.utils.data import DataLoader
 
+
+torch.set_float32_matmul_precision("high")
 warnings.filterwarnings("ignore", category=UserWarning)
 
 
