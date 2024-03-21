@@ -81,7 +81,7 @@ class LitMNIST(LightningModule):
 
 model = LitMNIST()
 trainer = Trainer(
-    max_epochs=1,
+    max_epochs=10,
     accelerator="auto",
     devices="auto",
     callbacks=[TQDMProgressBar(refresh_rate=20)],
