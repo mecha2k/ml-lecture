@@ -1,5 +1,9 @@
 import torch
 import torch.nn.functional as F
+import lightning
+import warnings
+import os
+
 from pytorch_lightning import LightningDataModule, LightningModule, Trainer
 from pytorch_lightning.callbacks.progress import TQDMProgressBar
 from torch import nn
@@ -8,10 +12,9 @@ from torchmetrics.functional import accuracy
 from torchvision import transforms
 from torchvision.datasets import CIFAR10, MNIST
 from time import time
-import warnings
-import os
 
 warnings.filterwarnings("ignore", category=UserWarning)
+print(lightning.__version__)
 
 
 class LitMNIST(LightningModule):
@@ -81,7 +84,7 @@ class LitMNIST(LightningModule):
 
 model = LitMNIST()
 trainer = Trainer(
-    max_epochs=10,
+    max_epochs=0,
     accelerator="auto",
     devices="auto",
     callbacks=[TQDMProgressBar(refresh_rate=20)],
