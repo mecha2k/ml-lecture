@@ -63,7 +63,7 @@ for i in range(1, rows * cols + 1):
     plt.imshow(img.squeeze().numpy(), cmap="gray")
 plt.savefig("mnist_sample", bbox_inches="tight")
 
-trainer = L.Trainer(max_epochs=1, max_steps=32)
+trainer = L.Trainer(max_epochs=1, devices="auto")
 autoencoder = LAutoEncoder(Encoder(), Decoder())
 trainer.fit(model=autoencoder, train_dataloaders=train_loader)
 
