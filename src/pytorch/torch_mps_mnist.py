@@ -14,10 +14,7 @@ import os
 warnings.filterwarnings("ignore", category=UserWarning)
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-device = torch.device("mps" if torch.backends.mps.is_available() else "cpu")
-print(f"{device} is available in torch")
-
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+device = torch.device("mps" if torch.backends.mps.is_available() else device)
 print(f"{device} is available in torch")
 
 datasets = MNIST("../data/mnist", train=True, transform=transforms.ToTensor(), download=True)
