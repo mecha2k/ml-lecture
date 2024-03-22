@@ -9,6 +9,7 @@ from torch import nn
 from torchvision import transforms
 from torchvision.datasets import MNIST
 from torch.utils.data import DataLoader
+from lightning.pytorch.callbacks import ModelSummary
 
 
 torch.set_float32_matmul_precision("high")
@@ -18,7 +19,9 @@ warnings.filterwarnings("ignore", category=UserWarning)
 class Encoder(nn.Module):
     def __init__(self):
         super().__init__()
-        self.l1 = nn.Sequential(nn.Linear(28 * 28, 64), nn.ReLU(), nn.Linear(64, 3))
+        self.l1 = nn.Sequential(
+            nn.Linear(28 * 28, 64), nn.ReLU(), nn.Linear(64, 3)
+        )
 
     def forward(self, x):
         return self.l1(x)
@@ -27,7 +30,9 @@ class Encoder(nn.Module):
 class Decoder(nn.Module):
     def __init__(self):
         super().__init__()
-        self.l1 = nn.Sequential(nn.Linear(3, 64), nn.ReLU(), nn.Linear(64, 28 * 28))
+        self.l1 = nn.Sequential(
+            nn.Linear(3, 64), nn.ReLU(), nn.Linear(64, 28 * 28)
+        )
 
     def forward(self, x):
         return self.l1(x)
@@ -68,22 +73,38 @@ class LAutoEncoder(L.LightningModule):
         return optimizer
 
 
-dataset = MNIST("../data", download=True, train=True, transform=transforms.ToTensor())
+dataset = MNIST(
+    "../data", download=True, train=True, transform=transforms.ToTensor()
+)
 train_size = int(len(dataset) * 0.8)
 valid_size = len(dataset) - train_size
 train_dataset, valid_dataset = torch.utils.data.random_split(
-    dataset, [train_size, valid_size], generator=torch.Generator().manual_seed(42)
+    dataset,
+    [train_size, valid_size],
+    generator=torch.Generator().manual_seed(42),
 )
-test_dataset = MNIST("../data", download=True, train=False, transform=transforms.ToTensor())
+test_dataset = MNIST(
+    "../data", download=True, train=False, transform=transforms.ToTensor()
+)
 
 train_loader = DataLoader(train_dataset, batch_size=256, shuffle=True)
 test_loader = DataLoader(test_dataset, batch_size=256, shuffle=True)
 valid_loader = DataLoader(valid_dataset, batch_size=256, shuffle=True)
 
 
-trainer = L.Trainer(max_epochs=1, max_steps=1024, devices="auto")
+trainer = L.Trainer(
+    max_epochs=1,
+    max_steps=32,
+    devices="auto",
+    # profiler="simple",
+    # callbacks=[ModelSummary(max_depth=-1)],
+)
 autoencoder = LAutoEncoder(Encoder(), Decoder())
-trainer.fit(model=autoencoder, train_dataloaders=train_loader, val_dataloaders=valid_loader)
+trainer.fit(
+    model=autoencoder,
+    train_dataloaders=train_loader,
+    val_dataloaders=valid_loader,
+)
 trainer.test(model=autoencoder, dataloaders=test_loader)
 
 
