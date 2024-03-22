@@ -191,7 +191,8 @@ Let's implement the four activation functions below:
 
 
 class ReLU(ActivationFunction):
-    def forward(self, x):
+    @staticmethod
+    def forward(x):
         return x * (x > 0).float()
 
 
@@ -205,12 +206,14 @@ class LeakyReLU(ActivationFunction):
 
 
 class ELU(ActivationFunction):
-    def forward(self, x):
+    @staticmethod
+    def forward(x):
         return torch.where(x > 0, x, torch.exp(x) - 1)
 
 
 class Swish(ActivationFunction):
-    def forward(self, x):
+    @staticmethod
+    def forward(x):
         return x * torch.sigmoid(x)
 
 
