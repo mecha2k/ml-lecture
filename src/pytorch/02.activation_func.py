@@ -100,7 +100,6 @@ In case the download below fails, you can download the models from a [Google Dri
 Please let me (Phillip) know if an error occurs so it can be fixed for all students.
 """
 
-# Github URL where saved models are stored for this tutorial
 base_url = (
     "https://raw.githubusercontent.com/phlippe/saved_models/main/tutorial3/"
 )
