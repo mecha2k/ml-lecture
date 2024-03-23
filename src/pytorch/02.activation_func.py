@@ -43,7 +43,9 @@ from torchvision import transforms
 from torchvision.datasets import FashionMNIST
 from tqdm import tqdm
 
-matplotlib_inline.backend_inline.set_matplotlib_formats("svg", "pdf")  # For export
+matplotlib_inline.backend_inline.set_matplotlib_formats(
+    "svg", "pdf"
+)  # For export
 sns.set()
 
 """We will define a function to set a seed on all libraries we might interact with in this tutorial (here numpy and torch).
@@ -85,7 +87,11 @@ torch.backends.cudnn.deterministic = True
 torch.backends.cudnn.benchmark = False
 
 # Fetching the device that will be used throughout this notebook
-device = torch.device("cpu") if not torch.cuda.is_available() else torch.device("cuda:0")
+device = (
+    torch.device("cpu")
+    if not torch.cuda.is_available()
+    else torch.device("cuda:0")
+)
 device = torch.device("mps") if torch.backends.mps.is_available() else device
 print("Using device", device)
 
@@ -95,7 +101,9 @@ In case the download below fails, you can download the models from a [Google Dri
 Please let me (Phillip) know if an error occurs so it can be fixed for all students.
 """
 
-base_url = "https://raw.githubusercontent.com/phlippe/saved_models/main/tutorial3/"
+base_url = (
+    "https://raw.githubusercontent.com/phlippe/saved_models/main/tutorial3/"
+)
 pretrained_files = [
     "FashionMNIST_elu.config",
     "FashionMNIST_elu.tar",
@@ -241,7 +249,9 @@ def get_grads(act_fn, x):
     Returns:
         A tensor with the same size of x containing the gradients of act_fn at x.
     """
-    x = x.clone().requires_grad_()  # Mark the input as tensor for which we want to store gradients
+    x = (
+        x.clone().requires_grad_()
+    )  # Mark the input as tensor for which we want to store gradients
     out = act_fn(x)
     out.sum().backward()  # Summing results in an equal gradient flow to each element in x
     return x.grad  # Accessing the gradients of x by "x.grad"
@@ -266,7 +276,9 @@ def vis_act_fn(act_fn, ax, x):
 
 # Add activation functions if wanted
 act_fns = [act_fn() for act_fn in act_fn_by_name.values()]
-x = torch.linspace(-5, 5, 1000)  # Range on which we want to visualize the activation functions
+x = torch.linspace(
+    -5, 5, 1000
+)  # Range on which we want to visualize the activation functions
 # Plotting
 cols = 2
 rows = math.ceil(len(act_fns) / float(cols))
@@ -361,9 +373,9 @@ def load_model(model_path, model_name, net=None):
         model_name: Name of the model (str)
         net: (Optional) If given, the state dict is loaded into this model. Otherwise, a new model is created.
     """
-    config_file, model_file = _get_config_file(model_path, model_name), _get_model_file(
+    config_file, model_file = _get_config_file(
         model_path, model_name
-    )
+    ), _get_model_file(model_path, model_name)
     assert os.path.isfile(
         config_file
     ), f'Could not find the config file "{config_file}". Are you sure this is the correct path and you have your model config stored here?'
@@ -390,9 +402,9 @@ def save_model(model, model_path, model_name):
     """
     config_dict = model.config
     os.makedirs(model_path, exist_ok=True)
-    config_file, model_file = _get_config_file(model_path, model_name), _get_model_file(
+    config_file, model_file = _get_config_file(
         model_path, model_name
-    )
+    ), _get_model_file(model_path, model_name)
     with open(config_file, "w") as f:
         json.dump(config_dict, f)
     torch.save(model.state_dict(), model_file)
@@ -409,23 +421,37 @@ Let's load the dataset below, and visualize a few images to get an impression of
 """
 
 # Transformations applied on each image => first make them a tensor, then normalize them in the range -1 to 1
-transform = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.5,), (0.5,))])
+transform = transforms.Compose(
+    [transforms.ToTensor(), transforms.Normalize((0.5,), (0.5,))]
+)
 
 # Loading the training dataset. We need to split it into a training and validation part
-train_dataset = FashionMNIST(root=DATASET_PATH, train=True, transform=transform, download=True)
-train_set, val_set = torch.utils.data.random_split(train_dataset, [50000, 10000])
+train_dataset = FashionMNIST(
+    root=DATASET_PATH, train=True, transform=transform, download=True
+)
+train_set, val_set = torch.utils.data.random_split(
+    train_dataset, [50000, 10000]
+)
 
 # Loading the test set
-test_set = FashionMNIST(root=DATASET_PATH, train=False, transform=transform, download=True)
+test_set = FashionMNIST(
+    root=DATASET_PATH, train=False, transform=transform, download=True
+)
 
 """We define a set of data loaders that we can use for various purposes later.
 Note that for actually training a model, we will use different data loaders
 with a lower batch size.
 """
 
-train_loader = data.DataLoader(train_set, batch_size=256, shuffle=True, drop_last=False)
-val_loader = data.DataLoader(val_set, batch_size=256, shuffle=False, drop_last=False)
-test_loader = data.DataLoader(test_set, batch_size=256, shuffle=False, drop_last=False)
+train_loader = data.DataLoader(
+    train_set, batch_size=256, shuffle=True, drop_last=False
+)
+val_loader = data.DataLoader(
+    val_set, batch_size=256, shuffle=False, drop_last=False
+)
+test_loader = data.DataLoader(
+    test_set, batch_size=256, shuffle=False, drop_last=False
+)
 
 exmp_imgs = [train_set[i][0] for i in range(16)]
 # Organize the images into a grid for nicer visualization
@@ -495,7 +521,9 @@ def visualize_gradients(net, color="C0", act_name="none"):
         y=1.05,
     )
     fig.subplots_adjust(wspace=0.45)
-    plt.savefig(os.path.join(IMG_PATH, f"gradients_{act_name}.png"), bbox_inches="tight")
+    plt.savefig(
+        os.path.join(IMG_PATH, f"gradients_{act_name}.png"), bbox_inches="tight"
+    )
 
 
 # Seaborn prints warnings if histogram has small values. We can ignore them for now
@@ -529,7 +557,9 @@ validation after every epoch and a final test on the best model:
 """
 
 
-def train_model(net, model_name, max_epochs=50, patience=7, batch_size=256, overwrite=False):
+def train_model(
+    net, model_name, max_epochs=50, patience=7, batch_size=256, overwrite=False
+):
     """Train a model on the training set of FashionMNIST.
 
     Args:
@@ -568,7 +598,9 @@ def train_model(net, model_name, max_epochs=50, patience=7, batch_size=256, over
             ############
             net.train()
             true_preds, count = 0.0, 0
-            for imgs, labels in tqdm(train_loader_local, desc=f"Epoch {epoch+1}", leave=False):
+            for imgs, labels in tqdm(
+                train_loader_local, desc=f"Epoch {epoch+1}", leave=False
+            ):
                 imgs, labels = imgs.to(device), labels.to(device)  # To GPU
                 optimizer.zero_grad()  # Zero-grad can be placed anywhere before "loss.backward()"
                 preds = net(imgs)
@@ -594,7 +626,9 @@ def train_model(net, model_name, max_epochs=50, patience=7, batch_size=256, over
                 save_model(net, CHECKPOINT_PATH, model_name)
                 best_val_epoch = epoch
             elif best_val_epoch <= epoch - patience:
-                print(f"Early stopping due to no improvement over the last {patience} epochs")
+                print(
+                    f"Early stopping due to no improvement over the last {patience} epochs"
+                )
                 break
 
         # Plot a curve of the validation accuracy
@@ -707,9 +741,9 @@ def visualize_activations(net, act_name, color="C0"):
 
 
 for i, act_fn_name in enumerate(act_fn_by_name):
-    net_actfn = load_model(model_path=CHECKPOINT_PATH, model_name=f"FashionMNIST_{act_fn_name}").to(
-        device
-    )
+    net_actfn = load_model(
+        model_path=CHECKPOINT_PATH, model_name=f"FashionMNIST_{act_fn_name}"
+    ).to(device)
     visualize_activations(net_actfn, act_fn_name, color=f"C{i}")
 
 """As the model with sigmoid activation was not able to train properly, the activations are also less informative and all gathered around 0.5 (the activation at input 0).
@@ -757,7 +791,9 @@ def measure_number_dead_neurons(net):
     ]  # Same shapes as hidden size in BaseNetwork
 
     net.eval()
-    for imgs, labels in tqdm(train_loader, leave=False):  # Run through whole training set
+    for imgs, labels in tqdm(
+        train_loader, leave=False
+    ):  # Run through whole training set
         layer_index = 0
         imgs = imgs.to(device)
         imgs = imgs.view(imgs.size(0), -1)
@@ -770,7 +806,7 @@ def measure_number_dead_neurons(net):
                 )
                 layer_index += 1
     number_neurons_dead = [t.sum().item() for t in neurons_dead]
-    print("Number of dead neurons:", number_neurons_dead)
+    print("\nNumber of dead neurons:", number_neurons_dead)
     print(
         "In percentage:",
         ", ".join(
@@ -795,7 +831,9 @@ Therefore, dead neurons in later layers can potentially become "alive"/active ag
 How does this look like for a trained network (with the same initialization)?
 """
 
-net_relu = load_model(model_path=CHECKPOINT_PATH, model_name="FashionMNIST_relu").to(device)
+net_relu = load_model(
+    model_path=CHECKPOINT_PATH, model_name="FashionMNIST_relu"
+).to(device)
 measure_number_dead_neurons(net_relu)
 
 """The number of dead neurons indeed decreased in the later layers.
