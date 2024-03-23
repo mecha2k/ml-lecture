@@ -602,7 +602,10 @@ def train_model(net, model_name, max_epochs=50, patience=7, batch_size=256, over
         plt.xlabel("Epochs")
         plt.ylabel("Validation accuracy")
         plt.title(f"Validation performance of {model_name}")
-        plt.savefig(os.path.join(IMG_PATH, f"train_acc_{model_name}.png"), bbox_inches="tight")
+        plt.savefig(
+            os.path.join(IMG_PATH, f"train_acc_{model_name}.png"),
+            bbox_inches="tight",
+        )
 
     load_model(CHECKPOINT_PATH, model_name, net=net)
     test_acc = test_model(net, test_loader)
@@ -697,7 +700,10 @@ def visualize_activations(net, act_name, color="C0"):
         fontsize=14,
     )
     fig.subplots_adjust(hspace=0.4, wspace=0.4)
-    plt.savefig(os.path.join(IMG_PATH, f"activation_{act_name}.png"), bbox_inches="tight")
+    plt.savefig(
+        os.path.join(IMG_PATH, f"activation_{act_name}.png"),
+        bbox_inches="tight",
+    )
 
 
 for i, act_fn_name in enumerate(act_fn_by_name):
