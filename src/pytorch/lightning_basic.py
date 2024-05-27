@@ -127,4 +127,4 @@ for i in range(1, rows * cols + 1):
     fig.add_subplot(rows, cols, i)
     plt.axis("off")
     plt.imshow(img.squeeze().numpy(), cmap="gray")
-plt.savefig("mnist_sample", bbox_inches="tight")
+plt.savefig("../images/mnist_sample", bbox_inches="tight")
