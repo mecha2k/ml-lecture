@@ -3,13 +3,16 @@ import torch.nn.functional as F
 import lightning as L
 import matplotlib.pyplot as plt
 import warnings
+import wandb
+import time
 import os
 
 from torch import nn
 from torchvision import transforms
 from torchvision.datasets import MNIST
 from torch.utils.data import DataLoader
-from lightning.pytorch.callbacks import ModelSummary
+from lightning.pytorch.callbacks import ModelSummary, ModelCheckpoint
+from lightning.pytorch.loggers import TensorBoardLogger, WandbLogger
 
 
 torch.set_float32_matmul_precision("high")
@@ -41,6 +44,7 @@ class Decoder(nn.Module):
 class LAutoEncoder(L.LightningModule):
     def __init__(self, encoder, decoder):
         super().__init__()
+        self.save_hyperparameters()
         self.encoder = encoder
         self.decoder = decoder
 
@@ -91,22 +95,39 @@ train_loader = DataLoader(train_dataset, batch_size=256, shuffle=True)
 test_loader = DataLoader(test_dataset, batch_size=256, shuffle=True)
 valid_loader = DataLoader(valid_dataset, batch_size=256, shuffle=True)
 
+tensorboard_logger = TensorBoardLogger(save_dir="../data", name="tensorboards")
+# wandb_logger = WandbLogger(project="lightning-wandb", save_dir="../data")
+# wandb_logger.experiment.config["batch_size"] = 256
+
+checkpoint_callback = ModelCheckpoint(
+    save_top_k=10,
+    verbose=True,
+    monitor="val_loss",
+    mode="min",
+    dirpath="../data/checkpoints",
+)
 
 trainer = L.Trainer(
-    max_epochs=1,
-    max_steps=32,
+    max_epochs=10,
     devices="auto",
-    # profiler="simple",
-    # callbacks=[ModelSummary(max_depth=-1)],
+    profiler=None,
+    logger=True,  # wandb_logger
+    default_root_dir="../data/checkpoints",
+    callbacks=[checkpoint_callback],
+    # callbacks=[checkpoint_callback, ModelSummary(max_depth=-1)],
 )
+
+start = time.time()
 autoencoder = LAutoEncoder(Encoder(), Decoder())
 trainer.fit(
     model=autoencoder,
     train_dataloaders=train_loader,
-    val_dataloaders=valid_loader,
+    # val_dataloaders=valid_loader,
 )
-trainer.test(model=autoencoder, dataloaders=test_loader)
+# trainer.test(model=autoencoder, dataloaders=test_loader)
+print(f"Time taken: {time.time() - start:.2f} seconds")
 
+# wandb.finish()
 
 # Under the hood, the Lightning Trainer runs the following training loop on your behalf
 # autoencoder = LAutoEncoder(Encoder(), Decoder())
