@@ -11,8 +11,13 @@ from torch import nn
 from torchvision import transforms
 from torchvision.datasets import MNIST
 from torch.utils.data import DataLoader
-from lightning.pytorch.callbacks import ModelSummary, ModelCheckpoint
+from lightning.pytorch.callbacks import (
+    ModelSummary,
+    ModelCheckpoint,
+    TQDMProgressBar,
+)
 from lightning.pytorch.loggers import TensorBoardLogger, WandbLogger
+from lightning.pytorch.profilers import PyTorchProfiler
 
 
 torch.set_float32_matmul_precision("high")
@@ -108,24 +113,33 @@ checkpoint_callback = ModelCheckpoint(
 )
 
 trainer = L.Trainer(
-    max_epochs=10,
+    max_epochs=5,
     devices="auto",
-    profiler=None,
-    logger=True,  # wandb_logger
+    profiler="advanced",
+    logger=True,
+    precision="bf16-mixed",
     default_root_dir="../data/checkpoints",
-    callbacks=[checkpoint_callback],
-    # callbacks=[checkpoint_callback, ModelSummary(max_depth=-1)],
+    enable_progress_bar=True,
+    callbacks=[checkpoint_callback, TQDMProgressBar(refresh_rate=10)],
 )
 
+model_path = "../data/checkpoints/autoencoder.ckpt"
+if os.path.exists(model_path):
+    autoencoder = LAutoEncoder.load_from_checkpoint(model_path)
+    print(f"Model loaded from {model_path}")
+else:
+    autoencoder = LAutoEncoder(Encoder(), Decoder())
+    print("no model found")
+
 start = time.time()
-autoencoder = LAutoEncoder(Encoder(), Decoder())
 trainer.fit(
     model=autoencoder,
     train_dataloaders=train_loader,
-    # val_dataloaders=valid_loader,
+    val_dataloaders=valid_loader,
 )
-# trainer.test(model=autoencoder, dataloaders=test_loader)
+trainer.test(model=autoencoder, dataloaders=test_loader)
 print(f"Time taken: {time.time() - start:.2f} seconds")
+trainer.save_checkpoint(model_path)
 
 # wandb.finish()
 
