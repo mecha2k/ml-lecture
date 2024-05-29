@@ -119,11 +119,12 @@ class ImageSampler(callbacks.Callback):
 
         if trainer.current_epoch == 0:
             save_image(
-                self._to_grid(images), f"grid_ori_{trainer.current_epoch}.png"
+                self._to_grid(images),
+                f"../images/grid_ori_{trainer.current_epoch}.png",
             )
         save_image(
             self._to_grid(images_generated.reshape(images.shape)),
-            f"grid_generated_{trainer.current_epoch}.png",
+            f"../images/grid_generated_{trainer.current_epoch}.png",
         )
 
 
