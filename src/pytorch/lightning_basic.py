@@ -1,8 +1,11 @@
 import torch
 import torch.nn.functional as F
+import torchmetrics
 import lightning as L
 import matplotlib.pyplot as plt
 import warnings
+
+import torchvision
 import wandb
 import time
 import os
@@ -11,13 +14,10 @@ from torch import nn
 from torchvision import transforms
 from torchvision.datasets import MNIST
 from torch.utils.data import DataLoader
-from lightning.pytorch.callbacks import (
-    ModelSummary,
-    ModelCheckpoint,
-    TQDMProgressBar,
-)
+from lightning.pytorch.callbacks import ModelCheckpoint, TQDMProgressBar
 from lightning.pytorch.loggers import TensorBoardLogger, WandbLogger
 from lightning.pytorch.profilers import PyTorchProfiler
+from lightning.pytorch.utilities.model_summary import ModelSummary
 
 
 torch.set_float32_matmul_precision("high")
@@ -52,34 +52,42 @@ class LAutoEncoder(L.LightningModule):
         self.save_hyperparameters()
         self.encoder = encoder
         self.decoder = decoder
+        self.cosine_similarity = torchmetrics.CosineSimilarity(reduction="mean")
+
+    def forward(self, x):
+        z = self.encoder(x)
+        return self.decoder(z)
 
     def training_step(self, batch, batch_idx):
-        x, y = batch
-        x = x.view(x.size(0), -1)
-        z = self.encoder(x)
-        x_hat = self.decoder(z)
-        loss = F.mse_loss(x_hat, x)
-        return loss
-
-    def test_step(self, batch, batch_idx):
-        x, y = batch
-        x = x.view(x.size(0), -1)
-        z = self.encoder(x)
-        x_hat = self.decoder(z)
-        loss = F.mse_loss(x_hat, x)
-        self.log("test_loss", loss)
+        return self._common_step(batch, batch_idx, "train")
 
     def validation_step(self, batch, batch_idx):
-        x, y = batch
-        x = x.view(x.size(0), -1)
-        z = self.encoder(x)
-        x_hat = self.decoder(z)
-        loss = F.mse_loss(x_hat, x)
-        self.log("val_loss", loss)
+        self._common_step(batch, batch_idx, "val")
+
+    def test_step(self, batch, batch_idx):
+        self._common_step(batch, batch_idx, "test")
+
+    def predict_step(self, batch, batch_idx, dataloader_idx=None):
+        x = self._prepare_batch(batch)
+        return self(x)
 
     def configure_optimizers(self):
         optimizer = torch.optim.Adam(self.parameters(), lr=1e-3)
         return optimizer
+
+    @staticmethod
+    def _prepare_batch(batch):
+        x, _ = batch
+        return x.view(x.size(0), -1)
+
+    def _common_step(self, batch, batch_idx, stage: str):
+        x = self._prepare_batch(batch)
+        acc = self.cosine_similarity(x, self(x))
+        loss = F.mse_loss(x, self(x))
+        self.log_dict(
+            {f"{stage}_loss": loss, f"{stage}_acc": acc}, on_step=True
+        )
+        return loss
 
 
 dataset = MNIST(
@@ -113,9 +121,9 @@ checkpoint_callback = ModelCheckpoint(
 )
 
 trainer = L.Trainer(
-    max_epochs=5,
+    max_epochs=0,
     devices="auto",
-    profiler="advanced",
+    profiler=None,  # "advanced"
     logger=True,
     precision="bf16-mixed",
     default_root_dir="../data/checkpoints",
@@ -131,35 +139,35 @@ else:
     autoencoder = LAutoEncoder(Encoder(), Decoder())
     print("no model found")
 
-start = time.time()
-trainer.fit(
-    model=autoencoder,
-    train_dataloaders=train_loader,
-    val_dataloaders=valid_loader,
-)
-trainer.test(model=autoencoder, dataloaders=test_loader)
-print(f"Time taken: {time.time() - start:.2f} seconds")
-trainer.save_checkpoint(model_path)
-
+# start = time.time()
+# trainer.fit(
+#     model=autoencoder,
+#     train_dataloaders=train_loader,
+#     val_dataloaders=valid_loader,
+# )
+# trainer.test(model=autoencoder, dataloaders=test_loader)
+# print(f"Time taken: {time.time() - start:.2f} seconds")
+# trainer.save_checkpoint(model_path)
 # wandb.finish()
 
-# Under the hood, the Lightning Trainer runs the following training loop on your behalf
-# autoencoder = LAutoEncoder(Encoder(), Decoder())
-# optimizer = autoencoder.configure_optimizers()
-#
-# for batch_idx, batch in enumerate(train_loader):
-#     loss = autoencoder.training_step(batch, batch_idx)
-#     loss.backward()
-#     optimizer.step()
-#     optimizer.zero_grad()
+dataset = next(iter(test_loader))
+autoencoder = LAutoEncoder.load_from_checkpoint(model_path)
+# predictions = trainer.predict(model=autoencoder, dataloaders=test_loader)
+# print(ModelSummary(autoencoder, max_depth=-1))
 
-
+rows, cols = 2, 5
 fig = plt.figure(figsize=(12, 8))
-rows, cols = 3, 3
-for i in range(1, rows * cols + 1):
-    sample_id = torch.randint(len(train_loader.dataset), size=(1,)).item()
-    img, label = train_loader.dataset[sample_id]
-    fig.add_subplot(rows, cols, i)
+for i in range(1, cols + 1):
+    sample_id = torch.randint(low=0, high=len(test_loader), size=(1,)).item()
+    img_in = test_dataset[sample_id][0]
+    img_out = autoencoder(img_in.view(img_in.size(0), -1)).reshape(28, 28, 1)
+    img_in = img_in.permute(1, 2, 0).numpy()
+    img_out = img_out.detach().numpy()
+    fig.add_subplot(1, cols, i)
     plt.axis("off")
-    plt.imshow(img.squeeze().numpy(), cmap="gray")
+    plt.imshow(img_in, cmap="gray")
+    fig.add_subplot(2, cols, i)
+    plt.axis("off")
+    plt.imshow(img_out, cmap="gray")
 plt.savefig("../images/mnist_sample", bbox_inches="tight")
+plt.close("all")
