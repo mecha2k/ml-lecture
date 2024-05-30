@@ -121,7 +121,7 @@ checkpoint_callback = ModelCheckpoint(
 )
 
 trainer = L.Trainer(
-    max_epochs=0,
+    max_epochs=10,
     devices="auto",
     profiler=None,  # "advanced"
     logger=True,
@@ -139,20 +139,20 @@ else:
     autoencoder = LAutoEncoder(Encoder(), Decoder())
     print("no model found")
 
-# start = time.time()
-# trainer.fit(
-#     model=autoencoder,
-#     train_dataloaders=train_loader,
-#     val_dataloaders=valid_loader,
-# )
-# trainer.test(model=autoencoder, dataloaders=test_loader)
-# print(f"Time taken: {time.time() - start:.2f} seconds")
-# trainer.save_checkpoint(model_path)
+start = time.time()
+trainer.fit(
+    model=autoencoder,
+    train_dataloaders=train_loader,
+    val_dataloaders=valid_loader,
+)
+trainer.test(model=autoencoder, dataloaders=test_loader)
+print(f"Time taken: {time.time() - start:.2f} seconds")
+trainer.save_checkpoint(model_path)
 # wandb.finish()
 
 dataset = next(iter(test_loader))
 autoencoder = LAutoEncoder.load_from_checkpoint(model_path)
-# predictions = trainer.predict(model=autoencoder, dataloaders=test_loader)
+predictions = trainer.predict(model=autoencoder, dataloaders=test_loader)
 # print(ModelSummary(autoencoder, max_depth=-1))
 
 rows, cols = 2, 5
