@@ -40,12 +40,9 @@ if gpus:
         print(e)
 
 print(torch.__version__)
-if torch.cuda.is_available():
-    device = torch.device("cuda:0")
-elif torch.backends.mps.is_available():
-    device = torch.device("mps")
-else:
-    device = torch.device("cpu")
+torch.set_float32_matmul_precision("high")
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+device = torch.device("mps" if torch.backends.mps.is_available() else device)
 print(f"{device} is available in torch")
 
 print(sys.version)
