@@ -3,13 +3,16 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 import torch
-import tensorflow
 import cv2
 import sys
 import platform
 import warnings
 import os
 
+# oneDNN 최적화 비활성화
+os.environ["TF_ENABLE_ONEDNN_OPTS"] = "0"
+
+import tensorflow
 from tensorflow.python.client import device_lib
 from dotenv import load_dotenv
 
