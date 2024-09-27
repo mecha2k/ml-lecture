@@ -1,31 +1,19 @@
 import numpy as np
 import pandas as pd
+import tensorflow as tf
 import matplotlib.pyplot as plt
-import seaborn as sns
 import torch
 import cv2
 import sys
 import platform
 import warnings
 import os
-
-# oneDNN 최적화 비활성화
-os.environ["TF_ENABLE_ONEDNN_OPTS"] = "0"
-
-import tensorflow
-from tensorflow.python.client import device_lib
 from dotenv import load_dotenv
 
 
 load_dotenv(verbose=True)
 warnings.filterwarnings("ignore", category=UserWarning)
 print(os.getenv("TELEGRAM"))
-
-tf = tensorflow.compat.v1
-sess = tf.Session(config=tf.ConfigProto(log_device_placement=True))
-print(tf.__version__)
-print(device_lib.list_local_devices())
-
 
 print("opencv version : ", cv2.__version__)
 print("opencv cuda count : ", cv2.cuda.getCudaEnabledDeviceCount())
@@ -35,10 +23,10 @@ except Exception as e:
     print(e)
 print(sys.path)
 
-gpus = tf.config.experimental.list_physical_devices("GPU")
+gpus = tf.config.list_physical_devices("GPU")
 if gpus:
     try:
-        tf.config.experimental.set_visible_devices(gpus[0], "GPU")
+        tf.config.set_visible_devices(gpus[0], "GPU")
     except RuntimeError as e:
         print(e)
 
