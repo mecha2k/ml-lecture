@@ -30,6 +30,12 @@ if gpus:
     except RuntimeError as e:
         print(e)
 
+print("tensorflow version : ", tf.__version__)
+print("tensorflow build : ", tf.sysconfig.get_build_info())
+print("cuda available : ", tf.test.is_built_with_cuda())
+print("gpu available : ", tf.config.list_physical_devices("GPU"))
+print("gpus : ", tf.config.list_physical_devices("GPU"))
+
 print(torch.__version__)
 torch.set_float32_matmul_precision("high")
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
