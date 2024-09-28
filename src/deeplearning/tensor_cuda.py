@@ -1,5 +1,6 @@
 import tensorflow as tf
 import os
+import sys
 import warnings
 
 
@@ -18,3 +19,8 @@ print("tensorflow build : ", tf.sysconfig.get_build_info())
 print("cuda available : ", tf.test.is_built_with_cuda())
 print("gpu available : ", tf.config.list_physical_devices("GPU"))
 print("gpus : ", tf.config.list_physical_devices("GPU"))
+print("CUDA version : ", tf.sysconfig.get_build_info()["cuda_version"], "\n\n")
+
+print("os path : ")
+for path in os.environ["PATH"].split(os.pathsep):
+    print(path)
