@@ -1,10 +1,8 @@
 import tensorflow as tf
 import os
-import sys
 import warnings
 
 
-# os.environ["TF_ENABLE_ONEDNN_OPTS"] = "0"
 warnings.filterwarnings("ignore", category=UserWarning)
 
 gpus = tf.config.list_physical_devices("GPU")
