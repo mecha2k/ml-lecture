@@ -13,6 +13,7 @@ from dotenv import load_dotenv
 
 load_dotenv(verbose=True)
 warnings.filterwarnings("ignore", category=UserWarning)
+os.environ["TF_CPP_MIN_LOG_LEVEL"] = "1"
 print(os.getenv("TELEGRAM"))
 
 print("opencv version : ", cv2.__version__)
