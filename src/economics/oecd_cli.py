@@ -2,9 +2,12 @@ import numpy as np
 import pandas as pd
 import FinanceDataReader as fdr
 import matplotlib.pyplot as plt
+import matplotlib.dates as dates
 import seaborn as sns
 
 from datetime import datetime
+
+from sympy.printing.pretty.pretty_symbology import line_width
 
 sns.set_style("whitegrid")
 
@@ -26,9 +29,15 @@ sns.set_style("whitegrid")
 #
 # # KRX Indices 국내 지수 데이터
 start = datetime(2010, 1, 1)
-end = datetime(2026, 1, 1)
-df = fdr.DataReader("KS11")  # KOSPI 지수 (KRX)
-print(df.info())
+end = datetime(2025, 12, 31)
+df_kospi = fdr.DataReader("KS11")  # KOSPI 지수 (KRX)
+print(df_kospi.info())
+
+df_cli = pd.read_csv("oecd_cli.csv")
+# convert "Category" column to datetimeIndex and set as index
+df_cli["Category"] = pd.to_datetime(df_cli["Category"])
+df_cli.set_index("Category", inplace=True)
+print(df_cli.info())
 
 
 def plot_train_test_dist(df, pieces=10, img_path=None, mode="train"):
@@ -57,8 +66,6 @@ def plot_train_test_dist(df, pieces=10, img_path=None, mode="train"):
     fig.savefig(img_path / f"{mode}_dist.png")
 
 
-import matplotlib.dates as dates
-
 # fig, ax = plt.subplots(figsize=(10, 7))
 #
 # # 1. 그래프를 그린다.
@@ -70,22 +77,81 @@ import matplotlib.dates as dates
 
 
 fig, ax1 = plt.subplots(figsize=(12, 6))
-ax1.plot(df.index, df.Close)
+ax1.plot(df_kospi.index, df_kospi.Close, color="blue", linewidth=2)
+ax1.set_ylabel("Kospi Index", fontsize=16)
+ax1.tick_params(axis="y")
+
 dateformat = dates.DateFormatter("%Y-%m")
 ax1.xaxis.set_major_formatter(dateformat)
-current_values = plt.gca().get_yticks()
-ax2 = ax1.twinx()
+ax1.set_xlim(start, end)
+ax1.set_ylim(500, 3501)
+ax1.xaxis.set_major_locator(dates.YearLocator(1))
+ax1.set_yticks(np.arange(500, 3501, 500))
+ax1.tick_params(axis="x", labelrotation=45)
 
-plt.grid(True)
-plt.legend("KOSPI")
-plt.xlim([start, end])
-plt.ylim([1000, 4001])
-plt.xticks(rotation=45)
-plt.yticks(np.arange(1000, 4001, 500))
-plt.tick_params(axis="both", which="major", labelsize=12)
-plt.ticklabel_format(style="plain", axis="y", scilimits=(0, 0))
+ax2 = ax1.twinx()
+ax2.plot(df_cli.index, df_cli["G20"], color="red", linewidth=2)
+ax2.set_ylabel("oecd cli G20", fontsize=16)
+ax2.tick_params(axis="y", labelcolor="green")
+ax2.set_ylim(94, 104)
+ax2.set_yticks(np.arange(94, 104, 1))
+
+ax1.grid(True, linestyle="--", alpha=1.0)
+ax2.grid(False)
+ax1.legend(["Kospi"], loc="upper left", fontsize=18)
+ax2.legend(["OECD CLI G20"], loc="upper right", fontsize=18)
 plt.tight_layout()
-plt.savefig("KOSPI.png")
+plt.savefig("KOSPI_OECD.png")
+
+# plt.grid(True)
+# plt.legend("KOSPI")
+# plt.xlim([start, end])
+# plt.ylim([1000, 4001])
+# plt.xticks(rotation=45)
+# plt.yticks(np.arange(1000, 4001, 500))
+# plt.tick_params(axis="both", which="major", labelsize=12)
+# plt.ticklabel_format(style="plain", axis="y", scilimits=(0, 0))
+# plt.tight_layout()
+# plt.savefig("KOSPI_OECD.png")
+
+
+# df1 = pd.DataFrame({'year': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+#                     'sales': [14, 16, 19, 22, 24, 25, 24, 24, 27, 30]})
+# df2 = pd.DataFrame({'year': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+#                     'leads': [4, 4, 4, 5, 4, 5, 7, 8, 5, 3]})
+#
+# # 색상 정의
+# col1 = 'steelblue'
+# col2 = 'red'
+#
+# # 그래프 및 축 생성
+# fig, ax1 = plt.subplots(figsize=(10, 6))
+#
+# # 첫 번째 y축 (판매량)
+# ax1.plot(df1.year, df1.sales, color=col1, marker='o', linewidth=2)
+# ax1.set_xlabel('연도', fontsize=14)
+# ax1.set_ylabel('판매량', color=col1, fontsize=16)
+# ax1.tick_params(axis='y', labelcolor=col1)
+#
+# # 두 번째 y축 (리드 수)
+# ax2 = ax1.twinx()
+# ax2.plot(df2.year, df2.leads, color=col2, marker='o', linewidth=2)
+# ax2.set_ylabel('리드 수', color=col2, fontsize=16)
+# ax2.tick_params(axis='y', labelcolor=col2)
+#
+# # 그래프 제목
+# plt.title('연도별 판매량과 리드 수', fontsize=18)
+#
+# # 그리드 추가
+# ax1.grid(True, linestyle='--', alpha=0.7)
+#
+# # 범례 추가
+# ax1.legend(['판매량'], loc='upper left')
+# ax2.legend(['리드 수'], loc='upper right')
+#
+# plt.tight_layout()
+# plt.show()
+
 
 # plot df
 # df.Close.plot(logy=True)
