@@ -8,23 +8,57 @@ import seaborn as sns
 from datetime import datetime
 from pathlib import Path
 
+from sympy.abc import alpha
+from sympy.plotting.intervalmath import interval
+
 sns.set_style("whitegrid")
+plt.rcParams["font.size"] = 16
 
 df_cli = pd.read_csv("oecd_cli.csv", index_col=0, parse_dates=True)
 print(df_cli.info())
-print(df_cli.index[0], df_cli.index[-1])
 
 kospi_file = Path("kospi.csv")
 if not kospi_file.is_file():
-    df_kospi = fdr.DataReader("KS11")  # KOSPI 지수 (KRX)
+    df_kospi = fdr.DataReader("KS11")
     df_kospi.to_csv("kospi.csv")
 
 df_kospi = pd.read_csv("kospi.csv", index_col="Date", parse_dates=True)
 print(df_kospi.info())
-print(df_kospi.index[0], df_kospi.index[-1])
 
 start = datetime(2010, 1, 1)
-end = datetime(2025, 12, 31)
+end = datetime(2026, 1, 1)
+
+fig, ax1 = plt.subplots(figsize=(12, 6))
+color = ["tab:red", "tab:orange", "tab:green"]
+ax1.set_ylabel("OECD CLI")
+for i, col in enumerate(df_cli.columns):
+    ax1.plot(df_cli.index, df_cli[col], color=color[i], label=col)
+ax1.tick_params(axis="y")
+ax1.legend()
+
+ax2 = ax1.twinx()
+color = "tab:blue"
+ax2.set_ylabel("Kospi Index", color=color)
+ax2.plot(df_kospi.index, df_kospi.Close, color=color)
+ax2.tick_params(axis="y", labelcolor=color)
+
+plt.gcf().autofmt_xdate()
+plt.gca().xaxis.set_major_formatter(mdates.DateFormatter("%Y-%m"))
+plt.gca().xaxis.set_major_locator(mdates.YearLocator(base=1))
+ax1.grid(
+    True, which="both", axis="both", linestyle="--", color="gray", alpha=0.5
+)
+ax1.set_xlim(start, end)
+ax1.set_ylim(94, 104)
+ax2.set_ylim(1000, 3500)
+
+ax2.set_yticks(
+    np.linspace(
+        ax2.get_yticks()[0], ax2.get_yticks()[-1], len(ax1.get_yticks())
+    )
+)
+plt.tight_layout()
+plt.savefig("KOSPI_OECD.png", dpi=300)
 
 # df = pd.concat([df_cli, df_kospi], axis=1)
 # df = df.loc[start:end]
