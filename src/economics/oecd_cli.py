@@ -8,10 +8,9 @@ import seaborn as sns
 from datetime import datetime
 from pathlib import Path
 
-from sympy.abc import alpha
-from sympy.plotting.intervalmath import interval
 
 sns.set_style("whitegrid")
+sns.set_palette("cubehelix")
 plt.rcParams["font.size"] = 16
 
 df_cli = pd.read_csv("oecd_cli.csv", index_col=0, parse_dates=True)
