@@ -7,8 +7,6 @@ import seaborn as sns
 
 from datetime import datetime
 
-from sympy.printing.pretty.pretty_symbology import line_width
-
 sns.set_style("whitegrid")
 
 # plt.style.use("seaborn")
