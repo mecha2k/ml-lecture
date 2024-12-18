@@ -11,7 +11,7 @@ from pathlib import Path
 
 sns.set_style("whitegrid")
 sns.set_palette("cubehelix")
-plt.rcParams["font.size"] = 16
+plt.rcParams["font.size"] = 14
 
 df_cli = pd.read_csv("oecd_cli.csv", index_col=0, parse_dates=True)
 print(df_cli.info())
@@ -24,14 +24,14 @@ if not kospi_file.is_file():
 df_kospi = pd.read_csv("kospi.csv", index_col="Date", parse_dates=True)
 print(df_kospi.info())
 
-start = datetime(2010, 1, 1)
-end = datetime(2026, 1, 1)
+start = datetime(2023, 1, 1)
+end = datetime(2025, 1, 1)
 
-fig, ax1 = plt.subplots(figsize=(12, 6))
+fig, ax1 = plt.subplots(figsize=(8, 6))
 color = ["tab:red", "tab:orange", "tab:green"]
 ax1.set_ylabel("OECD CLI")
 for i, col in enumerate(df_cli.columns):
-    ax1.plot(df_cli.index, df_cli[col], color=color[i], label=col)
+    ax1.plot(df_cli.index, df_cli[col], color=color[i], label=col, linewidth=5)
 ax1.tick_params(axis="y")
 ax1.legend()
 
@@ -43,7 +43,8 @@ ax2.tick_params(axis="y", labelcolor=color)
 
 plt.gcf().autofmt_xdate()
 plt.gca().xaxis.set_major_formatter(mdates.DateFormatter("%Y-%m"))
-plt.gca().xaxis.set_major_locator(mdates.YearLocator(base=1))
+plt.gca().xaxis.set_major_locator(mdates.MonthLocator(interval=2))
+# plt.gca().xaxis.set_major_locator(mdates.YearLocator(base=1))
 ax1.grid(
     True, which="both", axis="both", linestyle="--", color="gray", alpha=0.5
 )
