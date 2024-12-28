@@ -11,15 +11,14 @@ from pathlib import Path
 
 sns.set_style("whitegrid")
 sns.set_palette("cubehelix")
-plt.rcParams["font.size"] = 16
+plt.rcParams["font.size"] = 12
 
-df_cli = pd.read_csv("oecd_cli.csv", index_col=0, parse_dates=True)
+df_cli = pd.read_csv("oecd_cli.csv", index_col=0, parse_dates=True, skiprows=2)
 print(df_cli.info())
 
 kospi_file = Path("kospi.csv")
-if not kospi_file.is_file():
-    df_kospi = fdr.DataReader("KS11")
-    df_kospi.to_csv("kospi.csv")
+df_kospi = fdr.DataReader("KS11")
+df_kospi.to_csv("kospi.csv")
 
 df_kospi = pd.read_csv("kospi.csv", index_col="Date", parse_dates=True)
 print(df_kospi.info())
@@ -44,17 +43,13 @@ ax2.tick_params(axis="y", labelcolor=color)
 plt.gcf().autofmt_xdate()
 plt.gca().xaxis.set_major_formatter(mdates.DateFormatter("%Y-%m"))
 plt.gca().xaxis.set_major_locator(mdates.YearLocator(base=1))
-ax1.grid(
-    True, which="both", axis="both", linestyle="--", color="gray", alpha=0.5
-)
+ax1.grid(True, which="both", axis="both", linestyle="--", color="gray", alpha=0.5)
 ax1.set_xlim(start, end)
 ax1.set_ylim(94, 104)
-ax2.set_ylim(1000, 3500)
+ax2.set_ylim(1000, 4000)
 
 ax2.set_yticks(
-    np.linspace(
-        ax2.get_yticks()[0], ax2.get_yticks()[-1], len(ax1.get_yticks())
-    )
+    np.linspace(ax2.get_yticks()[0], ax2.get_yticks()[-1], len(ax1.get_yticks()))
 )
 plt.tight_layout()
 plt.savefig("KOSPI_OECD.png", dpi=300)
