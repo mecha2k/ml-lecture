@@ -16,9 +16,7 @@ plt.rcParams["font.size"] = 12
 df_cli = pd.read_csv("oecd_cli.csv", index_col=0, parse_dates=True, skiprows=2)
 print(df_cli.info())
 
-df_k_stat = pd.read_excel(
-    "K-stat 수출입 무역통계.xlsx", sheet_name="trade", skiprows=0, index_col=0
-)
+df_k_stat = pd.read_excel("k-stat_export.xlsx", sheet_name="trade", skiprows=0, index_col=0)
 df_k_stat.index = pd.to_datetime(df_k_stat.index)
 print(df_k_stat.info())
 
