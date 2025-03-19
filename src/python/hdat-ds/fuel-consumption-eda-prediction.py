@@ -84,20 +84,18 @@ def check_class(dataframe):
             "Classes": [dataframe[i].nunique() for i in dataframe.columns],
         }
     )
-
     nunique_df = nunique_df.sort_values("Classes", ascending=False)
     nunique_df = nunique_df.reset_index(drop=True)
     return nunique_df
 
 
 def grab_col_names(dataframe, cat_th=10, car_th=20):
-
     # cat_cols, cat_but_car
-    cat_cols = [col for col in dataframe.columns if dataframe[col].dtypes == "O"]
+    cat_cols = [col for col in dataframe.columns if dataframe[col].dtypes == "object"]
     num_but_cat = [
         col
         for col in dataframe.columns
-        if dataframe[col].nunique() < cat_th and dataframe[col].dtypes != "O"
+        if dataframe[col].nunique() < cat_th and dataframe[col].dtypes != "object"
     ]
     cat_but_car = [
         col
@@ -165,7 +163,10 @@ def cat_analyser(data, col: str, freq_limit: int = 36):
 
 df = auto_preprocess(auto)
 print(df.head())
-check_class(df)
+print(check_class(df))
+
+print(df["make"].dtypes)
+
 cat_cols, num_cols, cat_but_car = grab_col_names(df)
 desc_stats(df[num_cols])
 
