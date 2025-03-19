@@ -142,7 +142,7 @@ def desc_stats(dataframe):
 
 def cat_analyser(data, col: str, freq_limit: int = 36):
     df_ = data.copy()
-    sns.set(rc={"axes.facecolor": "gainsboro", "figure.facecolor": "gainsboro"})
+    sns.set_theme(rc={"axes.facecolor": "gainsboro", "figure.facecolor": "gainsboro"})
     if df_[col].nunique() > freq_limit:
         df_ = df_.loc[df_[col].isin(df_[col].value_counts().keys()[:freq_limit].tolist())]
     fig, ax = plt.subplots(nrows=1, ncols=2, figsize=(16, 6))
@@ -173,14 +173,14 @@ for col in cat_cols:
     cat_analyser(df, col)
 
 
-fig = make_subplots(rows=1, cols=1, shared_xaxes=True)
-fig.add_trace(
-    go.Scatter(y=df["horsepower"], name="horsepower", showlegend=False, marker_color=colors[1]),
-    row=1,
-    col=1,
-)
-fig.update_layout(title="<b>검사자 수와 음성판정자 수</b>", template=plotly_template)
-fig.show()
+# fig = make_subplots(rows=1, cols=1, shared_xaxes=True)
+# fig.add_trace(
+#     go.Scatter(y=df["horsepower"], name="horsepower", showlegend=False, marker_color=colors[1]),
+#     row=1,
+#     col=1,
+# )
+# fig.update_layout(title="<b>검사자 수와 음성판정자 수</b>", template=plotly_template)
+# fig.show()
 
 # using plotly graphs, plot boxplots and histograms of dataframe
 # for col in num_cols:
