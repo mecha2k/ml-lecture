@@ -3,6 +3,7 @@ import pandas as pd
 import os
 import warnings
 
+from matplotlib.pyplot import tight_layout
 from scipy import stats
 from scipy.stats import norm, skew
 from sklearn.base import clone
@@ -76,186 +77,156 @@ def auto_preprocess(dataframe):
     return df_
 
 
-# df = auto_preprocess(auto)
-# df.head()
-# #%% md
-# # <span style="color:#7DBCE6;
-# #              font-size:130%;
-# #              font-family:Verdana;">
-# # Variable Types
-# #%%
-# def check_class(dataframe):
-#     nunique_df = pd.DataFrame({'Variable': dataframe.columns,
-#                                'Classes': [dataframe[i].nunique() \
-#                                            for i in dataframe.columns]})
-#
-#     nunique_df = nunique_df.sort_values('Classes', ascending=False)
-#     nunique_df = nunique_df.reset_index(drop = True)
-#     return nunique_df
-#
-# check_class(df)
-# #%%
-# def grab_col_names(dataframe, cat_th=10, car_th=20):
-#
-#     # cat_cols, cat_but_car
-#     cat_cols = [col for col in dataframe.columns if dataframe[col].dtypes == "O"]
-#     num_but_cat = [col for col in dataframe.columns if dataframe[col].nunique() < cat_th and
-#                    dataframe[col].dtypes != "O"]
-#     cat_but_car = [col for col in dataframe.columns if dataframe[col].nunique() > car_th and
-#                    dataframe[col].dtypes == "O"]
-#     cat_cols = cat_cols + num_but_cat
-#     cat_cols = [col for col in cat_cols if col not in cat_but_car]
-#
-#     # num_cols
-#     num_cols = [col for col in dataframe.columns if dataframe[col].dtypes != "O"]
-#     num_cols = [col for col in num_cols if col not in num_but_cat]
-#
-#     print(f"Observations: {dataframe.shape[0]}")
-#     print(f"Variables: {dataframe.shape[1]}")
-#     print(f'cat_cols: {len(cat_cols)}')
-#     print(f'num_cols: {len(num_cols)}')
-#     print(f'cat_but_car: {len(cat_but_car)}')
-#     print(f'num_but_cat: {len(num_but_cat)}')
-#     return cat_cols, num_cols, cat_but_car
-#
-# cat_cols, num_cols, cat_but_car = grab_col_names(df)
-# #%% md
-# # <span style="color:#7DBCE6;
-# #              font-size:130%;
-# #              font-family:Verdana;">
-# # Descriptive Statistics
-# #%%
-# def desc_stats(dataframe):
-#     desc = dataframe.describe().T
-#     f,ax = plt.subplots(figsize=(10,
-#                                  desc.shape[0] * 0.75))
-#     sns.heatmap(desc,
-#                 annot = True,
-#                 cmap = cmap1,
-#                 fmt= '.2f',
-#                 ax = ax,
-#                 linecolor = 'white',
-#                 linewidths = 1.3,
-#                 cbar = False,
-#                 annot_kws = {"size": 12})
-#     plt.xticks(size = 14)
-#     plt.yticks(size = 12,
-#                rotation = 0)
-#     plt.title("Descriptive Statistics", size = 14)
-#     plt.show()
-#
-# desc_stats(df[num_cols])
-# #%% md
-# # <a id = "3"></a>
-# # <span style="color:#7DBCE6;
-# #              font-size:150%;
-# #              font-family:Verdana;">
-# # Exploratory Data Analysis
-# #
-# # <span style="color:#7DBCE6;
-# #              font-size:130%;
-# #              font-family:Verdana;">
-# # Analysis of Categorical Variables
-# #%%
-# def cat_analyser(data, col: str, freq_limit: int = 36):
-#     df_ = data.copy()
-#     sns.set(rc = {'axes.facecolor': 'gainsboro',
-#                   'figure.facecolor': 'gainsboro'})
-#     if df_[col].nunique() > freq_limit:
-#         df_ = df_.loc[df_[col].isin(df_[col].value_counts(). \
-#                                     keys()[:freq_limit].tolist())]
-#     fig, ax = plt.subplots(nrows = 1, ncols = 2, figsize = (16, 6))
-#     fig.suptitle(col, fontsize = 16)
-#     sns.countplot(data = df_,
-#                   x = col,
-#                   ax = ax[0],
-#                   palette= palette1,
-#                   order =  df_[col].value_counts().index)
-#     ax[0].set_xlabel('')
-#     pie_cmap = plt.get_cmap(palette2)
-#     normalize = lambda x: (x - np.min(x)) / (np.max(x) - np.min(x))
-#     data[col].value_counts().plot.pie(autopct = '%1.1f%%',
-#                                       textprops = {'fontsize': 10},
-#                                       ax = ax[1],
-#                                       colors = pie_cmap(
-#                                                     normalize(df_[col].value_counts())
-#                                                        )
-#                                      )
-#     ax[1].set_ylabel('')
-#     plt.show()
-#     matplotlib.rc_file_defaults()
-#     sns.reset_orig()
-#
-# for col in cat_cols:
-#     cat_analyser(df, col)
-# #%% md
-# # <span style="color:#7DBCE6;
-# #              font-size:130%;
-# #              font-family:Verdana;">
-# # Analysis of Numerical Variables
-# #%%
+def check_class(dataframe):
+    nunique_df = pd.DataFrame(
+        {
+            "Variable": dataframe.columns,
+            "Classes": [dataframe[i].nunique() for i in dataframe.columns],
+        }
+    )
+
+    nunique_df = nunique_df.sort_values("Classes", ascending=False)
+    nunique_df = nunique_df.reset_index(drop=True)
+    return nunique_df
+
+
+def grab_col_names(dataframe, cat_th=10, car_th=20):
+
+    # cat_cols, cat_but_car
+    cat_cols = [col for col in dataframe.columns if dataframe[col].dtypes == "O"]
+    num_but_cat = [
+        col
+        for col in dataframe.columns
+        if dataframe[col].nunique() < cat_th and dataframe[col].dtypes != "O"
+    ]
+    cat_but_car = [
+        col
+        for col in dataframe.columns
+        if dataframe[col].nunique() > car_th and dataframe[col].dtypes == "O"
+    ]
+    cat_cols = cat_cols + num_but_cat
+    cat_cols = [col for col in cat_cols if col not in cat_but_car]
+
+    # num_cols
+    num_cols = [col for col in dataframe.columns if dataframe[col].dtypes != "O"]
+    num_cols = [col for col in num_cols if col not in num_but_cat]
+
+    print(f"Observations: {dataframe.shape[0]}")
+    print(f"Variables: {dataframe.shape[1]}")
+    print(f"cat_cols: {len(cat_cols)}")
+    print(f"num_cols: {len(num_cols)}")
+    print(f"cat_but_car: {len(cat_but_car)}")
+    print(f"num_but_cat: {len(num_but_cat)}")
+    return cat_cols, num_cols, cat_but_car
+
+
+def desc_stats(dataframe):
+    desc = dataframe.describe().T
+    f, ax = plt.subplots(figsize=(10, desc.shape[0] * 0.75))
+    sns.heatmap(
+        desc,
+        annot=True,
+        cmap=cmap1,
+        fmt=".2f",
+        ax=ax,
+        linecolor="white",
+        linewidths=1.3,
+        cbar=False,
+        annot_kws={"size": 12},
+    )
+    plt.xticks(size=14)
+    plt.yticks(size=12, rotation=0)
+    plt.title("Descriptive Statistics", size=14)
+    plt.savefig("images/desc_stats.png", bbox_inches="tight")
+
+
+def cat_analyser(data, col: str, freq_limit: int = 36):
+    df_ = data.copy()
+    sns.set(rc={"axes.facecolor": "gainsboro", "figure.facecolor": "gainsboro"})
+    if df_[col].nunique() > freq_limit:
+        df_ = df_.loc[df_[col].isin(df_[col].value_counts().keys()[:freq_limit].tolist())]
+    fig, ax = plt.subplots(nrows=1, ncols=2, figsize=(16, 6))
+    fig.suptitle(col, fontsize=16)
+    sns.countplot(data=df_, x=col, ax=ax[0], palette=palette1, order=df_[col].value_counts().index)
+    ax[0].set_xlabel("")
+    pie_cmap = plt.get_cmap(palette2)
+    normalize = lambda x: (x - np.min(x)) / (np.max(x) - np.min(x))
+    data[col].value_counts().plot.pie(
+        autopct="%1.1f%%",
+        textprops={"fontsize": 10},
+        ax=ax[1],
+        colors=pie_cmap(normalize(df_[col].value_counts())),
+    )
+    ax[1].set_ylabel("")
+    plt.savefig(f"images/{col}_cat.png", bbox_inches="tight")
+    matplotlib.rc_file_defaults()
+    sns.reset_orig()
+
+
+df = auto_preprocess(auto)
+print(df.head())
+check_class(df)
+cat_cols, num_cols, cat_but_car = grab_col_names(df)
+desc_stats(df[num_cols])
+
+for col in cat_cols:
+    cat_analyser(df, col)
+
+
 # def num_summary(dataframe, col_name):
-#     fig = make_subplots(rows=1,cols=2,
-#                         subplot_titles=('Quantiles','Distribution'))
+#     fig = make_subplots(rows=1, cols=2, subplot_titles=("Quantiles", "Distribution"))
 #
-#     fig.add_trace(go.Box(y=dataframe[col_name],
-#                          name = str(col_name),
-#                          showlegend = False,
-#                          marker_color = colors[1]),
-#                   row = 1, col = 1)
+#     # fig.add_trace(
+#     #     go.Box(y=dataframe[col_name], name=str(col_name), showlegend=False, marker_color=colors[1]),
+#     #     row=1,
+#     #     col=1,
+#     # )
+#     # go.Box(y=dataframe[col_name], name=str(col_name), showlegend=False, marker_color=colors[1])
 #
-#     fig.add_trace(go.Histogram(x = dataframe[col_name],
-#                                xbins = dict(start = dataframe[col_name].min(),
-#                                             end = dataframe[col_name].max()),
-#                                showlegend = False,
-#                                name = str(col_name),
-#                                marker=dict(color=colors[0],
-#                                            line = dict(color = '#DBE6EC',
-#                                                        width = 1))
-#                               ),
-#                   row = 1, col = 2)
+#     fig.add_trace(
+#         go.Histogram(
+#             x=dataframe[col_name],
+#             xbins=dict(start=dataframe[col_name].min(), end=dataframe[col_name].max()),
+#             showlegend=False,
+#             name=str(col_name),
+#             marker=dict(color=colors[0], line=dict(color="#DBE6EC", width=1)),
+#         ),
+#         row=1,
+#         col=2,
+#     )
 #
-#     fig.update_layout(title = {'text': col_name,
-#                                'y':0.9,
-#                                'x':0.5,
-#                                'xanchor': 'center',
-#                                'yanchor': 'top'},
-#                       template = plotly_template)
+#     fig.update_layout(
+#         title={"text": col_name, "y": 0.9, "x": 0.5, "xanchor": "center", "yanchor": "top"},
+#         template=plotly_template,
+#     )
 #
 #     iplot(fig)
 #
-# for i in num_cols:
-#     num_summary(df,i)
-# #%% md
-# # <span style="color:#7DBCE6;
-# #              font-size:130%;
-# #              font-family:Verdana;">
-# # TOP 10 Horsepower
-# #%%
-# fig = px.bar(df[['horsepower','make','name']]. \
-#              sort_values('horsepower', ascending = False)[:10],
-#              y = 'name',
-#              x = 'horsepower',
-#              text = 'horsepower',
-#              labels={'name':'',
-#                      'horsepower': 'Horsepower',
-#                      'make': ''},
-#              color = 'make',
-#              color_discrete_sequence = colors)
 #
-# fig.update_layout(title= dict(text = 'TOP 10 Horsepower',
-#                               x = 0.5,
-#                               y = 0.95,
-#                               xanchor = 'center',
-#                               yanchor = 'top'),
-#                   xaxis = dict(title = 'Horsepower'),
-#                   yaxis = dict(categoryorder='total ascending'),
-#                   font=dict(family ='Verdana',
-#                             size = 14,
-#                             color = 'gray'),
-#                   template=plotly_template)
+# for i in num_cols:
+#     num_summary(df, i)
+
+
+# fig = px.bar(
+#     df[["horsepower", "make", "name"]].sort_values("horsepower", ascending=False)[:10],
+#     y="name",
+#     x="horsepower",
+#     text="horsepower",
+#     labels={"name": "", "horsepower": "Horsepower", "make": ""},
+#     color="make",
+#     color_discrete_sequence=colors,
+# )
+# fig.update_layout(
+#     title=dict(text="TOP 10 Horsepower", x=0.5, y=0.95, xanchor="center", yanchor="top"),
+#     xaxis=dict(title="Horsepower"),
+#     yaxis=dict(categoryorder="total ascending"),
+#     font=dict(family="Verdana", size=14, color="gray"),
+#     template=plotly_template,
+# )
 #
 # fig.show()
+
+
 # #%% md
 # # <span style="color:#7DBCE6;
 # #              font-size:130%;
