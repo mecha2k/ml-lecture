@@ -173,6 +173,19 @@ for col in cat_cols:
     cat_analyser(df, col)
 
 
+fig = make_subplots(rows=1, cols=1, shared_xaxes=True)
+fig.add_trace(
+    go.Scatter(y=df["horsepower"], name="horsepower", showlegend=False, marker_color=colors[1]),
+    row=1,
+    col=1,
+)
+fig.update_layout(title="<b>검사자 수와 음성판정자 수</b>", template=plotly_template)
+fig.show()
+
+# using plotly graphs, plot boxplots and histograms of dataframe
+# for col in num_cols:
+#     num_summary(df, col)
+
 # def num_summary(dataframe, col_name):
 #     fig = make_subplots(rows=1, cols=2, subplot_titles=("Quantiles", "Distribution"))
 #
