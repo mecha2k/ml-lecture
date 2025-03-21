@@ -19,7 +19,8 @@ print(f"생존자의 총 인원수(1) = {train['Survived'].value_counts()[1]}")
 print(f"사망자의 총 인원수(0) = {train['Survived'].value_counts()[0]}")
 
 # **2. Survived 컬럼에 들어가 있는 값을 쉬운 표현으로 바꿔주세요.**
-# Survived 컬럼에는 0(사망)이라는 값과 1(생존)이라는 값이 있습니다. 이 표현은 직관적이지 않기 때문에, 데이터 분석을 원활하게 하기 위해서는 사람이 읽기 쉬운 표현을 쓰는 것이 좋습니다.
+# Survived 컬럼에는 0(사망)이라는 값과 1(생존)이라는 값이 있습니다. 이 표현은 직관적이지 않기 때문에,
+# 데이터 분석을 원활하게 하기 위해서는 사람이 읽기 쉬운 표현을 쓰는 것이 좋습니다.
 train.loc[train["Survived"] == 0, "Survived(humanized)"] = "Died"
 train.loc[train["Survived"] == 1, "Survived(humanized)"] = "Survived"
 # Survived 컬럼이 0인 값을 Perish로, 1인 값을 Survived로 대체(replace)합니다.
@@ -214,7 +215,6 @@ plt.close()
 #   * **대가족(Big)** - 동승한 가족이 나 자신을 포함 5명 이상인 경우입니다.
 # 가족 형태(FamilyType)라는 새로운 컬럼을 만들어 주세요. 이 컬럼에는 앞서 설명한 Single, Nuclear, 그리고 Big이 들어갑니다.
 # 또한 가족 수(FamilySize)와 마찬가지로 가족 형태(FamilyType) 별 생존률의 차이도 구해주세요.
-
 train.loc[train["FamilySize"] == 1, "FamilyType"] = "Single"
 train.loc[(train["FamilySize"] > 1) & (train["FamilySize"] < 5), "FamilyType"] = "Nuclear"
 train.loc[train["FamilySize"] >= 5, "FamilyType"] = "Big"
