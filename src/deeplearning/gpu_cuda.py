@@ -37,9 +37,16 @@ print("gpus : ", tf.config.list_physical_devices("GPU"))
 
 print(torch.__version__)
 torch.set_float32_matmul_precision("high")
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-device = torch.device("mps" if torch.backends.mps.is_available() else device)
-print(f"{device} is available in torch")
+device = torch.device("cuda:0")
+if device.type == "cuda":
+    print(f"GPU: {torch.cuda.get_device_name(device)}")
+    print(
+        f"VRAM: {torch.cuda.get_device_properties(device).total_memory / 1e9:.1f} GB"
+    )
+elif device.type == "mps":
+    print("Apple Silicon MPS 사용 중")
+    print(f"MPS 사용 가능 여부: {torch.backends.mps.is_available()}")
+    print(f"MPS 빌드 포함 여부: {torch.backends.mps.is_built()}")
 print("CUDA version : ", torch.version.cuda)
 
 print(sys.version)
