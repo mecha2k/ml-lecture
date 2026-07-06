@@ -1,20 +1,35 @@
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
-import torch.optim as optim
-import torchvision
-import torchvision.transforms as transforms
-import matplotlib.pyplot as plt
-import numpy as np
-import os
-import json
-import sys
+from torchvision import datasets, transforms
+from torch.utils.data import DataLoader
 
 
+print(torch.__version__)
 torch.set_float32_matmul_precision("high")
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-device = torch.device("mps" if torch.backends.mps.is_available() else device)
-print(f"{device} is available in torch")
+device = torch.device("cuda:0")
+if device.type == "cuda":
+    print(f"GPU: {torch.cuda.get_device_name(device)}")
+    print(
+        f"VRAM: {torch.cuda.get_device_properties(device).total_memory / 1e9:.1f} GB"
+    )
+elif device.type == "mps":
+    print("Apple Silicon MPS 사용 중")
+    print(f"MPS 사용 가능 여부: {torch.backends.mps.is_available()}")
+    print(f"MPS 빌드 포함 여부: {torch.backends.mps.is_built()}")
+print("CUDA version : ", torch.version.cuda)
+
+
+batch_size = 256
+
+train_dataset = datasets.CIFAR10(
+    root="../data", train=True, transform=transforms.ToTensor(), download=True
+)
+test_dataset = datasets.CIFAR10(
+    root="../data", train=False, transform=transforms.ToTensor(), download=True
+)
+
+train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
+test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
 
 
 class Net(nn.Module):
@@ -26,10 +41,10 @@ class Net(nn.Module):
         return self.conv1(x)
 
 
-inputs = torch.randn(64, 3, 512, 512)
-model = Net().to(device)
-output = model(inputs.to(device))
-print(output.shape)
+# inputs = torch.randn(64, 3, 512, 512)
+# model = Net().to(device)
+# output = model(inputs.to(device))
+# print(output.shape)
 
 
 # # Hyper-parameters
