@@ -32,6 +32,13 @@ train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
 test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
 
 
+from sklearn.datasets import fetch_olivetti_faces
+
+olivetti_faces = fetch_olivetti_faces()
+print(dir(olivetti_faces))
+print(olivetti_faces.DESCR)
+
+
 class Net(nn.Module):
     def __init__(self):
         super().__init__()
